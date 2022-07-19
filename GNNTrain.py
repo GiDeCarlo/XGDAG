@@ -1,6 +1,6 @@
 ### Module file
-
 from GraphSageModel import GNN7L_Sage
+from Paths import PATH_TO_IMAGES, PATH_TO_REPORTS, PATH_TO_MODELS
 
 import pandas as pd
 import seaborn as sn
@@ -21,12 +21,11 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
 
     title = model_name + '_' + str(epochs) + '_' + str(weight_decay).replace('.', '_')
 
-    model_path  = 'Models/' + title
-    image_path  = 'Images/' + title
-    report_path = 'Reports/' + title + '.csv'
+    model_path  = PATH_TO_MODELS + title
+    image_path  = PATH_TO_IMAGES + title
+    report_path = PATH_TO_REPORTS + title + '.csv'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
-    # optimizer = torch.optim.RMSprop(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     train_mask  = data['train_mask']
     test_mask   = data['test_mask']
