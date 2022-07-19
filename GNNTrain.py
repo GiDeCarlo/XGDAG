@@ -22,13 +22,10 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
     title = model_name + '_' + str(epochs) + '_' + str(weight_decay).replace('.', '_')
 
     model_path  = PATH_TO_MODELS + title
-    image_path  = PATH_TO_IMAGES + title
-    report_path = PATH_TO_REPORTS + title + '.csv'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     train_mask  = data['train_mask']
-    test_mask   = data['test_mask']
     val_mask    = data['val_mask']
 
     labels = data.y
@@ -102,6 +99,19 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
     plt.ylabel('Train Loss')
     plt.show()
 
+    predict_from_saved_model(title, data, classes)
+
+    return output
+
+def predict_from_saved_model(model_name, data, classes):
+    image_path  = PATH_TO_IMAGES + model_name
+    report_path = PATH_TO_REPORTS + model_name + '.csv'
+    model_path  = PATH_TO_MODELS + model_name
+
+    test_mask   = data['test_mask']
+
+    labels = data.y
+
     # Load best model
     loaded_model = GNN7L_Sage(data)
     
@@ -137,4 +147,3 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
         else:
             plt.savefig(image_path + '_Norm.png')
 
-    return output
