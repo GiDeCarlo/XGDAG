@@ -8,7 +8,7 @@ from sklearn.preprocessing import RobustScaler
 
 from Paths import PATH_TO_DATASETS, PATH_TO_GRAPHS
 
-def create_graph_from_PPI(path_to_PPI, disease_id, graph_name, normalize=False):
+def create_graph_from_PPI(path_to_PPI, disease_id, graph_name, scale=False):
     t_start = perf_counter()
 
     print('[+] Reading PPI...', end='')
@@ -67,7 +67,7 @@ def create_graph_from_PPI(path_to_PPI, disease_id, graph_name, normalize=False):
         G.nodes[node]['InfoDiff']  = InfoDiff[node]
     print('ok')
 
-    if normalize:
+    if scale:
         print('[+] Normalizing NeDBIT features...', end='')
         degree      = []
         ring        = []
