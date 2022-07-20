@@ -103,10 +103,16 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
 
     return output
 
-def predict_from_saved_model(model_name, data, classes):
-    image_path  = PATH_TO_IMAGES + model_name
-    report_path = PATH_TO_REPORTS + model_name + '.csv'
+def predict_from_saved_model(model_name, data, classes, files_name=''):
     model_path  = PATH_TO_MODELS + model_name
+   
+    if files_name != '':
+        image_path  = PATH_TO_IMAGES + files_name
+        report_path = PATH_TO_REPORTS + files_name + '.csv'
+    else:
+        image_path  = PATH_TO_IMAGES + model_name
+        report_path = PATH_TO_REPORTS + model_name + '.csv'
+
 
     test_mask   = data['test_mask']
 
@@ -138,7 +144,7 @@ def predict_from_saved_model(model_name, data, classes):
             sn.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap = 'BuPu', xticklabels = classes, yticklabels = classes)
         else:
             sn.heatmap(cm, annot=True, fmt=".0f", linewidths=.5, square = True, cmap = 'BuPu', xticklabels = classes, yticklabels = classes)
-        plt.title(model_name)
+        plt.title(model_name if files_name == '' else files_name)
         plt.ylabel('Actual label')
         plt.xlabel('Predicted label')
 
