@@ -104,6 +104,8 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
     return output
 
 def predict_from_saved_model(model_name, data, classes, files_name='', save_to_file=True):
+    data = data.to(device)
+    
     model_path  = PATH_TO_MODELS + model_name
    
     if files_name != '':
