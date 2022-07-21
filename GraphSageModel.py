@@ -14,8 +14,8 @@ class GNN7L_Sage (nn.Module):
         self.conv6 = SAGEConv(16, 16, aggr='max')
         self.conv7 = SAGEConv(16, int(data.num_classes), aggr='max')
 
-    def forward(self, data):
-        x, edge_index = data.x, data.edge_index
+    def forward(self, x, edge_index):
+        #x, edge_index = data.x, data.edge_index
 
         x = F.relu(self.conv1(x, edge_index))
         x = F.relu(self.conv2(x, edge_index))

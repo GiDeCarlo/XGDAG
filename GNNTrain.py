@@ -43,7 +43,7 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
     for e in tqdm(range(epochs+1)):
         model.train()
         optimizer.zero_grad()
-        logits      = model(data)
+        logits      = model(data.x, data.edge_index)
         output      = logits.argmax(1)
         # train_loss  = F.cross_entropy(logits[train_mask], labels[train_mask])
         train_loss  = F.nll_loss(logits[train_mask], labels[train_mask])
@@ -103,7 +103,7 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
 
     return output
 
-def predict_from_saved_model(model_name, data, classes, files_name=''):
+def predict_from_saved_model(model_name, data, classes, files_name='', save_to_file=True):
     model_path  = PATH_TO_MODELS + model_name
    
     if files_name != '':
@@ -112,7 +112,6 @@ def predict_from_saved_model(model_name, data, classes, files_name=''):
     else:
         image_path  = PATH_TO_IMAGES + model_name
         report_path = PATH_TO_REPORTS + model_name + '.csv'
-
 
     test_mask   = data['test_mask']
 
@@ -124,14 +123,15 @@ def predict_from_saved_model(model_name, data, classes, files_name=''):
     loaded_model = loaded_model.to(device)
     loaded_model.load_state_dict(torch.load(model_path))
     loaded_model.eval()
-    logits = loaded_model(data)
+    logits = loaded_model(data.x, data.edge_index)
     output = logits.argmax(1)
 
     print(classification_report(labels[test_mask].to('cpu'), output[test_mask].to('cpu')))
 
-    class_report = classification_report(labels[test_mask].to('cpu'), output[test_mask].to('cpu'), output_dict=True)
-    classification_report_dataframe = pd.DataFrame(class_report)
-    classification_report_dataframe.to_csv(report_path)
+    if save_to_file:
+        class_report = classification_report(labels[test_mask].to('cpu'), output[test_mask].to('cpu'), output_dict=True)
+        classification_report_dataframe = pd.DataFrame(class_report)
+        classification_report_dataframe.to_csv(report_path)
 
     #Confusion Matrix
     norms = [None, "true"]
@@ -148,8 +148,10 @@ def predict_from_saved_model(model_name, data, classes, files_name=''):
         plt.ylabel('Actual label')
         plt.xlabel('Predicted label')
 
-        if norm == None:
-            plt.savefig(image_path + '_notNorm.png')
-        else:
-            plt.savefig(image_path + '_Norm.png')
-
+        if save_to_file:
+            if norm == None:
+                plt.savefig(image_path + '_notNorm.png')
+            else:
+                plt.savefig(image_path + '_Norm.png')
+    
+    return output, logits, loaded_model
