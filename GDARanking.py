@@ -14,7 +14,7 @@ torch.manual_seed(42)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positive=20, explanation_nodes_ratio=1, masks_for_seed=10, G=None, save_ranking_to_file=True):
+def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positive=20, explanation_nodes_ratio=1, masks_for_seed=10, G=None):
 
     # Predicted P(ositive) genes in the test mask
     # dictionaries with {gene: prob}
@@ -22,7 +22,6 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
     overall_LP  = {}
 
     x = dataset.x
-    y = dataset.y
 
     test_mask   = dataset.test_mask
     edge_index  = dataset.edge_index
@@ -43,9 +42,6 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
 
     # Dictionary in the from {LP: [#subgraphs it is present in, sum of GNNExplainer's scores in the different subgraphs]}
     ranking = {}
-
-    genes_in_extended       = []
-    genes_not_in_extended   = []
 
     graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
@@ -68,8 +64,8 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
             test_P[node] = test_probs[i][0].item() # take probability of class 0 (p)
         i += 1
 
-    print('[i] # of predicted positive genes in test mask:', len(test_P))
-    print('[i] # of predicted overall likely positive genes:', len(overall_LP))
+    # print('[i] # of predicted positive genes in test mask:', len(test_P))
+    # print('[i] # of predicted overall likely positive genes:', len(overall_LP))
 
     top_k_test_P = heapq.nlargest(n_positive, test_P, key=test_P.get)
 
@@ -151,7 +147,12 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
                 ranking[candidate][1] += candidates[seed][candidate].item()
     
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
-    top_100         = sorted_ranking[:100]
+
+    return sorted_ranking
+
+def validate_with_extended_dataset(top_k, disease_Id, save_ranking_to_file=True):
+    genes_in_extended       = []
+    genes_not_in_extended   = []
 
     extended_genes          = pd.read_csv('Datasets/all_gene_disease_associations.tsv', sep='\t')
     extended_genes          = extended_genes[extended_genes['diseaseId'] == disease_Id]
@@ -161,7 +162,7 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
     if save_ranking_to_file:
         fout = open(PATH_TO_RANKINGS + disease_Id + '_20_Positive_Ranking.txt', 'w')
 
-    for gene in top_100:
+    for gene in top_k:
         if gene in extended_genes_names:
             genes_in_extended.append(gene)
         else:
@@ -174,6 +175,6 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
         fout.close()
 
     precision = len(genes_in_extended)
-    print('# of genes found in the extended dataset for disease', disease_Id, ':', precision)
+    # print('# of genes found in the extended dataset for disease', disease_Id, ':', precision)
 
-    return sorted_ranking, precision
+    return precision

@@ -58,14 +58,14 @@ class MyDataset(InMemoryDataset):
 # an instance of MyDataset class is returned. MyDataset is a class
 # to create a custom dataset for training a pytorch model
 
-def get_dataset_from_graph(path_to_graph, disease_id):
+def get_dataset_from_graph(path_to_graph, disease_id, verbose=True):
     t_start = perf_counter()
 
-    print('[+] Reading graph...', end='')
+    if verbose: print('[+] Reading graph...', end='')
     G = nx.read_gml(path_to_graph)
-    print('ok')
+    if verbose: print('ok')
 
-    print('[+] Creating dataset...', end='')
+    if verbose: print('[+] Creating dataset...', end='')
     path_to_seed_genes = PATH_TO_DATASETS + disease_id + '_seed_genes.txt'
 
     seed_genes          = pd.read_csv(path_to_seed_genes, header=None, sep=' ')
@@ -104,11 +104,11 @@ def get_dataset_from_graph(path_to_graph, disease_id):
     attributes = ['degree', 'ring', 'NetRank', 'NetShort', 'HeatDiff', 'InfoDiff']
 
     dataset_with_nedbit = MyDataset(G, labels, attributes, num_classes=5)
-    print('ok')
+    if verbose: print('ok')
 
     data_with_nedbit = dataset_with_nedbit[0]
     
     t_end = perf_counter()
-    print('[i] Elapsed time:', round(t_end - t_start, 3))
+    if verbose: print('[i] Elapsed time:', round(t_end - t_start, 3))
 
     return data_with_nedbit, G
