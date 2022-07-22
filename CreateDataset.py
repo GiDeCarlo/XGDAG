@@ -111,4 +111,4 @@ def get_dataset_from_graph(path_to_graph, disease_id):
     t_end = perf_counter()
     print('[i] Elapsed time:', round(t_end - t_start, 3))
 
-    return data_with_nedbit
+    return data_with_nedbit, G

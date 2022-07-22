@@ -14,7 +14,7 @@ torch.manual_seed(42)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positive=20, explanation_nodes_ratio=1, masks_for_seed=10, save_ranking_to_file=True):
+def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positive=20, explanation_nodes_ratio=1, masks_for_seed=10, G=None, save_ranking_to_file=True):
 
     # Predicted P(ositive) genes in the test mask
     # dictionaries with {gene: prob}
@@ -49,9 +49,10 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
 
     graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
-    print('[+] Reading graph...', end='')
-    G = nx.read_gml(graph_path)
-    print('ok')
+    if G == None:
+        print('[+] Reading graph...', end='')
+        G = nx.read_gml(graph_path)
+        print('ok')
 
     i = 0
     for node in G.nodes:

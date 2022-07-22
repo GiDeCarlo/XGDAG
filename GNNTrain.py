@@ -103,7 +103,13 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
 
     return output
 
-def predict_from_saved_model(model_name, data, classes, files_name='', save_to_file=True):
+def predict_from_saved_model(model_name, data, classes, files_name='', plot_results=True, save_to_file=True):
+
+    if not plot_results and save_to_file:
+        print('[i] plot_results set to', plot_results, 'but save_to_file set to', save_to_file)
+        print('with such configuration, only the report will be saved but not the confusion matrices')
+
+
     data = data.to(device)
     
     model_path  = PATH_TO_MODELS + model_name
@@ -128,7 +134,8 @@ def predict_from_saved_model(model_name, data, classes, files_name='', save_to_f
     logits = loaded_model(data.x, data.edge_index)
     output = logits.argmax(1)
 
-    print(classification_report(labels[test_mask].to('cpu'), output[test_mask].to('cpu')))
+    if plot_results:
+        print(classification_report(labels[test_mask].to('cpu'), output[test_mask].to('cpu')))
 
     if save_to_file:
         class_report = classification_report(labels[test_mask].to('cpu'), output[test_mask].to('cpu'), output_dict=True)
@@ -136,24 +143,25 @@ def predict_from_saved_model(model_name, data, classes, files_name='', save_to_f
         classification_report_dataframe.to_csv(report_path)
 
     #Confusion Matrix
-    norms = [None, "true"]
-    for norm in norms:
-        cm = confusion_matrix(labels[test_mask].to('cpu'), output[test_mask].to('cpu'), normalize=norm)
+    if plot_results:
+        norms = [None, "true"]
+        for norm in norms:
+            cm = confusion_matrix(labels[test_mask].to('cpu'), output[test_mask].to('cpu'), normalize=norm)
 
-        plt.figure(figsize=(7,7))
-        
-        if norm == "true":
-            sn.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap = 'BuPu', xticklabels = classes, yticklabels = classes)
-        else:
-            sn.heatmap(cm, annot=True, fmt=".0f", linewidths=.5, square = True, cmap = 'BuPu', xticklabels = classes, yticklabels = classes)
-        plt.title(model_name if files_name == '' else files_name)
-        plt.ylabel('Actual label')
-        plt.xlabel('Predicted label')
-
-        if save_to_file:
-            if norm == None:
-                plt.savefig(image_path + '_notNorm.png')
+            plt.figure(figsize=(7,7))
+            
+            if norm == "true":
+                sn.heatmap(cm, annot=True, fmt=".3f", linewidths=.5, square = True, cmap = 'BuPu', xticklabels = classes, yticklabels = classes)
             else:
-                plt.savefig(image_path + '_Norm.png')
+                sn.heatmap(cm, annot=True, fmt=".0f", linewidths=.5, square = True, cmap = 'BuPu', xticklabels = classes, yticklabels = classes)
+            plt.title(model_name if files_name == '' else files_name)
+            plt.ylabel('Actual label')
+            plt.xlabel('Predicted label')
+
+            if save_to_file:
+                if norm == None:
+                    plt.savefig(image_path + '_notNorm.png')
+                else:
+                    plt.savefig(image_path + '_Norm.png')
     
     return output, logits, loaded_model
