@@ -109,14 +109,14 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
         seen_genes = set()
 
         for i in range(len(indices)):
-            src = edge_index[0][indices[i]]
-            trgt = edge_index[1][indices[i]]
+            src     = edge_index[0][indices[i]]
+            trgt    = edge_index[1][indices[i]]
 
-            src_name = nodes_names[src]
-            trgt_name = nodes_names[trgt]
+            src_name    = nodes_names[src]
+            trgt_name   = nodes_names[trgt]
 
-            src_pred = predictions[src]
-            trgt_pred = predictions[trgt]
+            src_pred    = predictions[src]
+            trgt_pred   = predictions[trgt]
 
             # if gene has not been seen and it is not the explained node
             # we add it to the seen genes set
@@ -150,12 +150,12 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
                 ranking[candidate][0] += 1
                 ranking[candidate][1] += candidates[seed][candidate].item()
     
-    sorted_ranking = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
-    top_100 = sorted_ranking[:100]
+    sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
+    top_100         = sorted_ranking[:100]
 
-    extended_genes = pd.read_csv('Datasets/all_gene_disease_associations.tsv', sep='\t')
-    extended_genes = extended_genes[extended_genes['diseaseId'] == disease_Id]
-    extended_genes_names = set(extended_genes['geneSymbol'].tolist())
+    extended_genes          = pd.read_csv('Datasets/all_gene_disease_associations.tsv', sep='\t')
+    extended_genes          = extended_genes[extended_genes['diseaseId'] == disease_Id]
+    extended_genes_names    = set(extended_genes['geneSymbol'].tolist())
 
     fout = None
     if save_ranking_to_file:
