@@ -129,7 +129,7 @@ def predict_from_saved_model(model_name, data, classes, files_name='', plot_resu
     loaded_model = GNN7L_Sage(data)
     
     loaded_model = loaded_model.to(device)
-    loaded_model.load_state_dict(torch.load(model_path))
+    loaded_model.load_state_dict(torch.load(model_path, map_location=torch.device(device)))
     loaded_model.eval()
     logits = loaded_model(data.x, data.edge_index)
     output = logits.argmax(1)
