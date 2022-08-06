@@ -18,6 +18,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def train(model, data, epochs, lr, weight_decay, classes, model_name):    
     data = data.to(device)
+    model = model.to(device)
 
     title = model_name + '_' + str(epochs) + '_' + str(weight_decay).replace('.', '_')
 
@@ -60,7 +61,7 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
 
         # Evaluation and test
         model.eval()
-        logits      = model(data)
+        logits      = model(data.x, data.edge_index)
         output      = logits.argmax(1)
         val_loss    = F.nll_loss(logits[val_mask], labels[val_mask])
         val_acc     = (output[val_mask] == labels[val_mask]).float().mean()

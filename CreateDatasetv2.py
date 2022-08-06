@@ -58,7 +58,7 @@ class MyDataset(InMemoryDataset):
 # an instance of MyDataset class is returned. MyDataset is a class
 # to create a custom dataset for training a pytorch model
 
-def get_dataset_from_graph(path_to_graph, disease_id, verbose=True):
+def get_dataset_from_graph(path_to_graph, disease_id, verbose=True, quartile=True):
     t_start = perf_counter()
 
     if verbose: print('[+] Reading graph...', end='')
@@ -71,33 +71,56 @@ def get_dataset_from_graph(path_to_graph, disease_id, verbose=True):
     seed_genes          = pd.read_csv(path_to_seed_genes, header=None, sep=' ')
     seed_genes.columns  = ["name", "GDA Score"]
     seeds_list          = seed_genes["name"].values.tolist()
-    
-    nedbit_scores = pd.read_csv(PATH_TO_DATASETS + disease_id + '_features_Score.csv')
 
-    # Remove seed genes
-    nedbit_scores_not_seed = nedbit_scores[~nedbit_scores['name'].isin(seeds_list)]
+  
+    nedbit_scores = pd.read_csv('Datasets_v2/' + disease_id + '_ranking', sep=' ', header=None)
+    nedbit_scores.columns = ["name", "out", "label"]
 
-    # Sort scores for quartile division
-    nedbit_scores_not_seed = nedbit_scores_not_seed.sort_values(by = "out", ascending = False)
-    pseudo_labels = pd.qcut(x = nedbit_scores_not_seed["out"], q = 4, labels = ["RN", "LN", "WN", "LP"])
+    nedbit_scores['name'] = nedbit_scores['name'].str.replace("ORF",'orf')
+    nedbit_scores['name'] = nedbit_scores['name'].str.replace("Morf",'MORF')
+    nedbit_scores['name'] = nedbit_scores['name'].str.replace("^orf1$",'ORF1', regex=True)
+    nedbit_scores['name'] = nedbit_scores['name'].str.replace("SERF2_C15orf63",'SERF2_C15ORF63')
+    nedbit_scores['name'] = nedbit_scores['name'].str.replace("LOC100499484_C9orf174",'LOC100499484_C9ORF174')
 
-    nedbit_scores_not_seed['label'] = pseudo_labels
+    if not quartile:
+      nedbit_scores["label"].replace(to_replace = 1, value = "P", inplace = True)
+      nedbit_scores["label"].replace(to_replace = 2, value = "LP", inplace = True)
+      nedbit_scores["label"].replace(to_replace = 3, value = "WN", inplace = True)
+      nedbit_scores["label"].replace(to_replace = 4, value = "LN", inplace = True)
+      nedbit_scores["label"].replace(to_replace = 5, value = "RN", inplace = True)
 
-    nedbit_scores_seed = nedbit_scores[nedbit_scores['name'].isin(seeds_list)]
-    nedbit_scores_seed = nedbit_scores_seed.assign(label = 'P')
+      nodes_labels = dict(zip(nedbit_scores['name'], nedbit_scores['label']))
 
-    # Convert dataframe to dict for searching nodes and their labels
-    not_seed_labels = dict(zip(nedbit_scores_not_seed['name'], nedbit_scores_not_seed['label']))
-    seed_labels     = dict(zip(nedbit_scores_seed['name'], nedbit_scores_seed['label']))
+      labels_dict = {'P':0, 'LP': 1, 'WN': 2, 'LN': 3, 'RN': 4}
+      labels = []
 
-    labels_dict = {'P':0, 'LP': 1, 'WN': 2, 'LN': 3, 'RN': 4}
-    labels = []
+      for node in G:
+        labels.append(labels_dict[nodes_labels[node]])
 
-    for node in G:
-        if node in not_seed_labels:
-            labels.append(labels_dict[not_seed_labels[node]])
-        else:
-            labels.append(labels_dict[seed_labels[node]])
+    else:
+      # Remove seed genes
+      nedbit_scores_not_seed = nedbit_scores[~nedbit_scores['name'].isin(seeds_list)]
+      # Sort scores for quartile division
+      nedbit_scores_not_seed = nedbit_scores_not_seed.sort_values(by = "out", ascending = False)
+      pseudo_labels = pd.qcut(x = nedbit_scores_not_seed["out"], q = 4, labels = ["RN", "LN", "WN", "LP"])
+
+      nedbit_scores_not_seed['label'] = pseudo_labels
+
+      nedbit_scores_seed = nedbit_scores[nedbit_scores['name'].isin(seeds_list)]
+      nedbit_scores_seed = nedbit_scores_seed.assign(label = 'P')
+
+      # Convert dataframe to dict for searching nodes and their labels
+      not_seed_labels = dict(zip(nedbit_scores_not_seed['name'], nedbit_scores_not_seed['label']))
+      seed_labels     = dict(zip(nedbit_scores_seed['name'], nedbit_scores_seed['label']))
+
+      labels_dict = {'P':0, 'LP': 1, 'WN': 2, 'LN': 3, 'RN': 4}
+      labels = []
+
+      for node in G:
+          if node in not_seed_labels:
+              labels.append(labels_dict[not_seed_labels[node]])
+          else:
+              labels.append(labels_dict[seed_labels[node]])
 
     labels = np.asarray(labels)
 

@@ -82,8 +82,8 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
         if i not in subg_numnodes_d:
             subg_numnodes_d[i] = [len(subg_nodes), subg_edge_index.shape[1]]
 
+    nodes_names = list(G.nodes)
     for i in tqdm(range(len(top_k_test_P_idx))):
-        nodes_names = list(G.nodes)
 
         idx = top_k_test_P_idx[i]
         idx_name = nodes_names[idx]
@@ -149,6 +149,109 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
 
     return sorted_ranking
+
+def get_ranking_from_all_positives(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, masks_for_seed=10, G=None):
+    x           = dataset.x
+    labels      = dataset.y
+    edge_index  = dataset.edge_index
+
+    ranking         = {}
+    candidates      = {}
+    nodes_with_idxs = {}
+    subg_numnodes_d = {}
+
+    nodes_names = list(G.nodes)
+
+    # Take all positive genes
+    graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
+    if G == None:
+        print('[+] Reading graph...', end='')
+        G = nx.read_gml(graph_path)
+        print('ok')
+    
+    i = 0
+    for node in G:
+        if labels[i] == 0:
+            nodes_with_idxs[node] = i
+        i += 1
+    
+    print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
+
+    # Get the subgraphs of every positive nodes
+    for node in nodes_with_idxs:
+        idx = nodes_with_idxs[node]
+
+        subg_nodes, subg_edge_index, subg_mapping, subg_edge_mask = torch_geometric.utils.k_hop_subgraph(idx, 1, edge_index)
+        if idx not in subg_numnodes_d:
+            subg_numnodes_d[idx] = [len(subg_nodes), subg_edge_index.shape[1]]
+
+    # Get explanations of all the positive genes
+    for node in tqdm(nodes_with_idxs):
+        idx = nodes_with_idxs[node]
+
+        candidates[node] = {}
+
+        mean_mask = torch.zeros(edge_index.shape[1]).to('cpu')
+
+        for i in range(masks_for_seed):
+            explainer = GNNExplainer(model, epochs=200, return_type='log_prob', num_hops=1, log=False)
+            node_feat_mask, edge_mask = explainer.explain_node(idx, x, edge_index)
+            mean_mask += edge_mask.to('cpu')
+
+        mean_mask = torch.div(mean_mask, masks_for_seed)
+
+        num_nodes = int(round(subg_numnodes_d[idx][0]*explanation_nodes_ratio))
+
+        values, indices = torch.topk(mean_mask, subg_numnodes_d[idx][1]) #take ordered list of all edges
+
+        seen_genes = set()
+
+        for i in range(len(indices)):
+            src     = edge_index[0][indices[i]]
+            trgt    = edge_index[1][indices[i]]
+
+            src_name    = nodes_names[src]
+            trgt_name   = nodes_names[trgt]
+
+            src_pred    = predictions[src]
+            trgt_pred   = predictions[trgt]
+
+            # if gene has not been seen and it is not the explained node
+            # we add it to the seen genes set
+            if src_name != node:
+                seen_genes.add(src_name)
+            if trgt_name != node:
+                seen_genes.add(trgt_name)
+
+            if src_pred == 1: # LP
+                if src_name not in candidates[node]:
+                    candidates[node][src_name] = values[i]
+                else:
+                    candidates[node][src_name] += values[i]
+
+            if trgt_pred == 1: # LP
+                if trgt_name not in candidates[node]:
+                    candidates[node][trgt_name] = values[i]
+                else:
+                    candidates[node][trgt_name] += values[i]
+            
+            # when the seen geens set reaches the num_nodes threshold
+            # break the loop
+            if len(seen_genes) >= num_nodes:
+                break
+
+    for seed in candidates:
+        for candidate in candidates[seed]:
+            if candidate not in ranking:
+                ranking[candidate] = [1, candidates[seed][candidate].item()]
+            else:
+                ranking[candidate][0] += 1
+                ranking[candidate][1] += candidates[seed][candidate].item()
+    
+    sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
+
+    return sorted_ranking
+
 
 def validate_with_extended_dataset(top_k, disease_Id, save_ranking_to_file=True):
     genes_in_extended       = []
