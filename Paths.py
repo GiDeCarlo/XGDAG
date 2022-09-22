@@ -1,4 +1,4 @@
-PATH_TO_DATASETS    = 'Datasets/'
+PATH_TO_DATASETS    = 'Datasets_v2/'
 PATH_TO_GRAPHS      = 'Graphs/'
 PATH_TO_IMAGES      = 'Images/'
 PATH_TO_REPORTS     = 'Reports/'
