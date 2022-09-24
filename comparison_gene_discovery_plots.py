@@ -19,7 +19,7 @@ DISEASE_CODES = {"C0006142_Malignant_neoplasm_of_breast": "C0006142", "C0009402_
 
 # COMPARE_METHODS = ["DIAMOnD", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
 # COMPARE_METHODS = ["DIAMOnD", "XGDAG", "XGDAG + LP", "fFlow", "NetCombo", "NetRank"]
-COMPARE_METHODS = ["DIAMOnD", "XGDAG", "XGDAG + LP"]
+COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
 GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRank"]
 
 PLOT = True
@@ -45,9 +45,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
     precision_folds_compare_methods["XGDAG"] = []
     F1_folds_compare_methods["XGDAG"] = []
 
-    recall_folds_compare_methods["XGDAG + LP"] = []
-    precision_folds_compare_methods["XGDAG + LP"] = []
-    F1_folds_compare_methods["XGDAG + LP"] = []
+    recall_folds_compare_methods["GNNExplainer"] = []
+    precision_folds_compare_methods["GNNExplainer"] = []
+    F1_folds_compare_methods["GNNExplainer"] = []
 
     for ratio_to_validate in ratios_to_validate:
         
@@ -125,13 +125,13 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
             ranking_method = []
 
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG + LP":
+                if METHOD == "XGDAG":
                     with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking.txt", "r", encoding="utf-8") as rankingFile:
                         for line in rankingFile:
                             ranking_method.append(line.strip("\n"))
                     
-                elif METHOD == "XGDAG":
-                    with open("Rankings/" + DISEASE_NAME + "_new_rankings_no_LP_intersection_10_masks.txt", "r", encoding="utf-8") as rankingFile:
+                elif METHOD == "GNNExplainer":
+                    with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking_no_lp_intersection.txt", "r", encoding="utf-8") as rankingFile:
                         for line in rankingFile:
                             ranking_method.append(line.strip("\n"))
                 else:
@@ -217,9 +217,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
             
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG + LP":
-                    sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label="XGDAG (GNNExplainer + NIAPU)")
-                elif METHOD == "XGDAG":
+                if METHOD == "XGDAG":
+                    sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label="XGDAG")
+                elif METHOD == "GNNExplainer":
                     sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label="GNNExplainer")
                 else:
                     sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label=METHOD)
@@ -261,9 +261,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
            
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG + LP":
-                    sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label="XGDAG (GNNExplainer + NIAPU)")
-                elif METHOD == "XGDAG":
+                if METHOD == "XGDAG":
+                    sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label="XGDAG")
+                elif METHOD == "GNNExplainer":
                     sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label="GNNExplainer")
                 else:
                     sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label=METHOD)
@@ -306,9 +306,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
             
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG + LP":
-                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="XGDAG (GNNExplainer + NIAPU)")
-                elif METHOD == "XGDAG":
+                if METHOD == "XGDAG":
+                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="XGDAG")
+                elif METHOD == "GNNExplainer":
                     sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="GNNExplainer")
                 else:
                     sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label=METHOD)
