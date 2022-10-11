@@ -19,8 +19,9 @@ DISEASE_CODES = {"C0006142_Malignant_neoplasm_of_breast": "C0006142", "C0009402_
 
 # COMPARE_METHODS = ["DIAMOnD", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
 # COMPARE_METHODS = ["DIAMOnD", "XGDAG", "XGDAG + LP", "fFlow", "NetCombo", "NetRank"]
-COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
 GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRank"]
+# COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
+COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
 
 PLOT = True
 SAVE_METRICS = False
