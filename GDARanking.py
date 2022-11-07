@@ -27,11 +27,11 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ###new methods
 
-def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all"):
+def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False):
     if explainability_method.lower() == "gnnexplainer":
-        return predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
+        return predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold)
     elif explainability_method.lower() == "graphsvx":
-        return predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
+        return predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold)
     # elif explainability_method.lower() == "subgraphx":
     #     return predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
     # elif explainability_method.lower() == "edgeshaper":
@@ -256,7 +256,7 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False):
 
     
-
+    print(num_pos)
     #graphsvx params
     num_samples = 100 #number of coaliton used to apporx shapley values
     info =  False
@@ -311,7 +311,9 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
             subg_numnodes_d[idx] = [len(subg_nodes), subg_edge_index.shape[1]]
 
     # Get explanations of all the positive genes
+    nodes_explained = 0
     for node in tqdm(nodes_with_idxs):
+
         idx = nodes_with_idxs[node]
 
         candidates[node] = {}
@@ -367,16 +369,23 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
             
             # when the seen geens set reaches the num_nodes threshold
             # break the loop
+
             if len(seen_genes) >= num_nodes:
+                print('break')
                 break
+        
+        nodes_explained += 1
+        if num_pos != len(nodes_with_idxs) and nodes_explained >= num_pos:
+            break
+        
 
     for seed in candidates:
         for candidate in candidates[seed]:
             if candidate not in ranking:
-                ranking[candidate] = [1, candidates[seed][candidate].item()]
+                ranking[candidate] = [1, candidates[seed][candidate]]
             else:
                 ranking[candidate][0] += 1
-                ranking[candidate][1] += candidates[seed][candidate].item()
+                ranking[candidate][1] += candidates[seed][candidate]
     
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
 
