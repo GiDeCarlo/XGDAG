@@ -13,7 +13,6 @@ import torch
 import torch_geometric
 from torch_geometric.nn.models import GNNExplainer
 
-sys.path.append('C:/Repositories/GraphSVX')
 from src.explainers import GraphSVX
 from src.data import prepare_data
 from src.train import evaluate, test
@@ -23,13 +22,12 @@ SEED = 42
 torch.manual_seed(SEED)
 np.random.seed(SEED)
 random.seed(SEED)
-torch.use_deterministic_algorithms(True) #Mmmmmh, not sure if we want it
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ###new methods
 
-def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None):
+def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all"):
     if explainability_method.lower() == "gnnexplainer":
         return predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
     elif explainability_method.lower() == "graphsvx":
@@ -255,12 +253,12 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 
     return sorted_ranking
 
-def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None):
+def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False):
 
     
 
     #graphsvx params
-    num_samples = 400 #number of coaliton used to apporx shapley values
+    num_samples = 100 #number of coaliton used to apporx shapley values
     info =  False
     multiclass = True
     fullempty = None #true to discard full and empy coalitions
@@ -273,9 +271,10 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
     vizu = False
     gpu = True
 
-    x           = dataset.x
-    labels      = dataset.y
-    edge_index  = dataset.edge_index
+    x           = dataset.x.to('cpu')
+    labels      = dataset.y.to('cpu')
+    edge_index  = dataset.edge_index.to('cpu')
+    
 
     ranking         = {}
     candidates      = {}
@@ -299,7 +298,11 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
     
     print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
 
+    if num_pos == "all":
+        num_pos = len(nodes_with_idxs)
+
     # Get the subgraphs of every positive nodes
+    
     for node in nodes_with_idxs:
         idx = nodes_with_idxs[node]
 
@@ -313,32 +316,35 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 
         candidates[node] = {}
         
-        explainer = GraphSVX(dataset, model, gpu)
+        explainer = GraphSVX(dataset.to("cpu"), model, gpu)
         pred_explanations = explainer.explain([idx], num_hops,num_samples,info, multiclass,fullempty,S,hv,feat,coal,g,regu,vizu)
         current_node_explanations = pred_explanations[0] #only one eplxanation
         num_features_explanations = explainer.F #features in explanation, we only consider nodes. The order returned is [f0,..,fn,n0,...nm]. We want to set self.F to 0
         neighbors = explainer.neighbours #k_hop_subgraph_nodes
         explanations_shapley_values = current_node_explanations[0][num_features_explanations:] #explaining predicted class, it was 0 - Positive
 
-        threshold = torch.mean(explanations_shapley_values) #mean value for threshold
+        if threshold:
+            threshold = np.mean(explanations_shapley_values) #mean value for threshold
 
         _, idxs = torch.topk(torch.from_numpy(
             np.abs(explanations_shapley_values)), neighbors.shape[0]) #num_important_nodes, with neighbors.shape[0] we take them all in order to remove them to obtain the needed sparsity
 
         vals = [explanations_shapley_values[idx] for idx in idxs]
         influential_nei = {}
-        for idx, val in zip(idxs, vals):
-            influential_nei[neighbors[idx]] = val
+        for idx_n, val in zip(idxs, vals):
+            influential_nei[neighbors[idx_n]] = val
+            
         nodes_and_explanations = [(item[0].item(), item[1].item()) for item in list(influential_nei.items())]
         nodes_and_explanations = {item[0]: item[1] for item in nodes_and_explanations}
-
-        for node in nodes_and_explanations:
-            if nodes_and_explanations[node] < threshold:
-                del nodes_and_explanations[node]
+    
+        if threshold:
+            nodes_and_scores_candidates = {item[0]: item[1] for item in nodes_and_explanations.items() if item[1] >= threshold}
+        else:
+            nodes_and_scores_candidates = nodes_and_explanations
 
         num_nodes = int(round(subg_numnodes_d[idx][0]*explanation_nodes_ratio))
-
-        important_nodes = list(nodes_and_explanations.keys())
+        print(subg_numnodes_d[idx][0])
+        important_nodes = list(nodes_and_scores_candidates.keys())
 
         seen_genes = set()
 

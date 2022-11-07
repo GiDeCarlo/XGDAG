@@ -23,8 +23,8 @@ from torch.utils.data import DataLoader, TensorDataset
 from torch_geometric.nn import GNNExplainer as GNNE
 from torch_geometric.nn import MessagePassing
 
-from src.models import LinearRegressionModel
-from src.plots import (denoise_graph, k_hop_subgraph, log_graph,
+from .models import LinearRegressionModel
+from .plots import (denoise_graph, k_hop_subgraph, log_graph,
                        visualize_subgraph, custom_to_networkx)
 
 
