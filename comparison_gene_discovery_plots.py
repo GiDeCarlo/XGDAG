@@ -21,7 +21,10 @@ DISEASE_CODES = {"C0006142_Malignant_neoplasm_of_breast": "C0006142", "C0009402_
 # COMPARE_METHODS = ["DIAMOnD", "XGDAG", "XGDAG + LP", "fFlow", "NetCombo", "NetRank"]
 GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRank"]
 # COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
-COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
+COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG - GNNExplainer", "XGDAG - GraphSVX", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
+
+XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubraphX", "XGDAG - SubgraphX",
+                "EdgeSHAPer", "XGDAG - EdgeSHAPer"]
 
 PLOT = True
 SAVE_METRICS = False
@@ -37,18 +40,27 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
     precision_folds = []
     F1_folds = []
 
-    recall_folds_compare_methods = {"DIAMOnD":[], "MCL": [], "RWR": [], "fFlow":[], "NetScore":[], "NetZcore":[], "NetShort": [], "NetCombo": [], "NetRank":[],}
-    precision_folds_compare_methods = {"DIAMOnD":[], "MCL": [], "RWR": [], "fFlow":[], "NetScore":[], "NetZcore":[], "NetShort": [], "NetCombo":[], "NetRank":[]}
-    F1_folds_compare_methods = {"DIAMOnD":[], "MCL": [], "RWR": [], "fFlow":[], "NetScore":[], "NetZcore":[], "NetShort": [], "NetCombo":[], "NetRank":[]}
+    recall_folds_compare_methods = {}
+    precision_folds_compare_methods = {}
+    F1_folds_compare_methods = {}
+
+    for METHOD in COMPARE_METHODS:
+        recall_folds_compare_methods[METHOD] = []
+        precision_folds_compare_methods[METHOD] = []
+        F1_folds_compare_methods[METHOD] = []
+
+    # recall_folds_compare_methods = {"DIAMOnD":[], "MCL": [], "RWR": [], "fFlow":[], "NetScore":[], "NetZcore":[], "NetShort": [], "NetCombo": [], "NetRank":[],}
+    # precision_folds_compare_methods = {"DIAMOnD":[], "MCL": [], "RWR": [], "fFlow":[], "NetScore":[], "NetZcore":[], "NetShort": [], "NetCombo":[], "NetRank":[]}
+    # F1_folds_compare_methods = {"DIAMOnD":[], "MCL": [], "RWR": [], "fFlow":[], "NetScore":[], "NetZcore":[], "NetShort": [], "NetCombo":[], "NetRank":[]}
 
     
-    recall_folds_compare_methods["XGDAG"] = []
-    precision_folds_compare_methods["XGDAG"] = []
-    F1_folds_compare_methods["XGDAG"] = []
+    # recall_folds_compare_methods["XGDAG"] = []
+    # precision_folds_compare_methods["XGDAG"] = []
+    # F1_folds_compare_methods["XGDAG"] = []
 
-    recall_folds_compare_methods["GNNExplainer"] = []
-    precision_folds_compare_methods["GNNExplainer"] = []
-    F1_folds_compare_methods["GNNExplainer"] = []
+    # recall_folds_compare_methods["GNNExplainer"] = []
+    # precision_folds_compare_methods["GNNExplainer"] = []
+    # F1_folds_compare_methods["GNNExplainer"] = []
 
     for ratio_to_validate in ratios_to_validate:
         
@@ -125,22 +137,12 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
             ranking_method = []
 
-            if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG":
-                    with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking.txt", "r", encoding="utf-8") as rankingFile:
-                        for line in rankingFile:
-                            ranking_method.append(line.strip("\n"))
-                    
-                elif METHOD == "GNNExplainer":
-                    with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking_no_lp_intersection.txt", "r", encoding="utf-8") as rankingFile:
-                        for line in rankingFile:
-                            ranking_method.append(line.strip("\n"))
-                else:
-                    with open("Rankings/other_methods/" + METHOD + "/" + METHOD.lower() + "_output_" + DISEASE_NAME + ".txt", "r", encoding="utf-8") as rankingFile:
-                        for line in rankingFile:
-                            ranking_method.append(line.strip("\n"))
-            else:
-                
+            if METHOD in XAI_METHODS:
+                with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking_" + METHOD.lower().replace("-", "_").replace(" ", "") + ".txt", "r", encoding="utf-8") as rankingFile:
+                    for line in rankingFile:
+                        ranking_method.append(line.strip("\n"))
+
+            elif METHOD in GUILD_METHODS:        
                 GUILD_METHOD_PATH = "Rankings/other_methods/GUILD/" + METHOD + "/" + DISEASE_NAME + "_" + METHOD + ".txt"
 
                 GUILD_scores_df = pd.read_csv(GUILD_METHOD_PATH, header = None, sep = "\t")
@@ -149,7 +151,11 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
 
                 ranking_method_df_not_seeds = GUILD_scores_df[~GUILD_scores_df['name'].isin(train_seeds_list)]
                 ranking_method = ranking_method_df_not_seeds["name"].values.tolist()
-                
+               
+            else:
+                with open("Rankings/other_methods/" + METHOD + "/" + METHOD.lower() + "_output_" + DISEASE_NAME + ".txt", "r", encoding="utf-8") as rankingFile:
+                        for line in rankingFile:
+                            ranking_method.append(line.strip("\n"))
                 
 
             ranking_method = ranking_method[:round(ratio_to_validate)]
@@ -218,12 +224,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
             
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG":
-                    sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label="XGDAG")
-                elif METHOD == "GNNExplainer":
-                    sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label="GNNExplainer")
-                else:
-                    sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label=METHOD)
+                sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label=METHOD)
             else:
                 if METHOD != "NetRank":
                     sns.lineplot(x=ratios, y=recall_folds_compare_methods[METHOD],label= "GUILD-" + METHOD)
@@ -262,12 +263,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
            
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG":
-                    sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label="XGDAG")
-                elif METHOD == "GNNExplainer":
-                    sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label="GNNExplainer")
-                else:
-                    sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label=METHOD)
+                sns.lineplot(x=ratios, y=precision_folds_compare_methods[METHOD],label=METHOD)
                 
             else:
                 if METHOD != "NetRank":
@@ -307,12 +303,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         for METHOD in COMPARE_METHODS:
             
             if METHOD not in GUILD_METHODS:
-                if METHOD == "XGDAG":
-                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="XGDAG")
-                elif METHOD == "GNNExplainer":
-                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="GNNExplainer")
-                else:
-                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label=METHOD)
+                sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label=METHOD)
                 
             else:
                 if METHOD != "NetRank":
