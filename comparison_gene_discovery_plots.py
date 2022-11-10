@@ -7,7 +7,7 @@ from matplotlib.pyplot import figure
 
 import sys
 
-DISEASE_NAMES = ["C0006142_Malignant_neoplasm_of_breast", "C0376358_Malignant_neoplasm_of_prostate","C0036341_Schizophrenia", "C0009402_Colorectal_Carcinoma", "C0023893_Liver_Cirrhosis_Experimental"] 
+DISEASE_NAMES = ["C0006142_Malignant_neoplasm_of_breast",  "C0009402_Colorectal_Carcinoma", "C0376358_Malignant_neoplasm_of_prostate","C0036341_Schizophrenia", "C0023893_Liver_Cirrhosis_Experimental"] 
 ''',"C0009402_Colorectal_Carcinoma", "C0023893_Liver_Cirrhosis_Experimental", 
     "C0036341_Schizophrenia", "C0376358_Malignant_neoplasm_of_prostate", "C0001973_Alcoholic_Intoxication_Chronic", "C0011581_Depressive_disorder", "C0860207_Drug_Induced_Liver_Disease",
                  "C3714756_Intellectual_Disability", "C0005586_Bipolar_Disorder"]'''
