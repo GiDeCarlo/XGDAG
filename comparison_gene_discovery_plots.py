@@ -21,7 +21,7 @@ DISEASE_CODES = {"C0006142_Malignant_neoplasm_of_breast": "C0006142", "C0009402_
 # COMPARE_METHODS = ["DIAMOnD", "XGDAG", "XGDAG + LP", "fFlow", "NetCombo", "NetRank"]
 GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRank"]
 # COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
-COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG - GNNExplainer", "XGDAG - GraphSVX", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
+COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
 
 XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubraphX", "XGDAG - SubgraphX",
                 "EdgeSHAPer", "XGDAG - EdgeSHAPer"]
@@ -194,6 +194,11 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         
         ratios = [str(n) for n in ratios_to_validate]
         
+        dis_name_full = DISEASE_NAME.split("_")
+        dis_code = dis_name_full[0]
+        dis_name = " ".join(dis_name_full[1:]).lower()
+        dis_name_title = dis_code + " - " + dis_name
+        
         # sns.lineplot(x=ratios, y=precision_folds)
         # plt.ylabel("Precision")
         # plt.xlabel("Number of candidate genes")
@@ -238,7 +243,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         plt.xlabel("Number of candidate genes")
         plt.legend(loc = "best")
         # plt.legend(["NIAPU P"], ["NIAPU R"])
-        plt.title("Recall scores for disease " + DISEASE_NAME.replace("_", " "))
+        plt.title("Recall scores for disease " + dis_name_title)
         plt.ylim(0, max_rec + 0.01)
         
         # plt.ylim(0, max(recall_folds) + 0.1)
@@ -277,7 +282,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         plt.ylabel("Precision")
         plt.xlabel("Number of candidate genes")
         plt.legend(loc = "best")
-        plt.title("Precision scores for disease " + DISEASE_NAME.replace("_", " "))
+        plt.title("Precision scores for disease " + dis_name_title)
         # plt.legend(["NIAPU P"], ["NIAPU R"])
         #plt.ylim(0, 1)
         plt.ylim(0, max_prec + 0.01)
@@ -317,7 +322,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         plt.ylabel("F1 score")
         plt.xlabel("Number of candidate genes")
         plt.legend(loc = "best")
-        plt.title("F1 scores for disease " + DISEASE_NAME.replace("_", " "))
+        plt.title("F1 scores for disease " + dis_name_title)
         # plt.legend(["NIAPU P"], ["NIAPU R"])
         #plt.ylim(0, 1)
         plt.ylim(0, max_F1 + 0.01)
