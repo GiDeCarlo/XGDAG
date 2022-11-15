@@ -13,6 +13,8 @@ import torch
 import torch_geometric
 from torch_geometric.nn.models import GNNExplainer
 
+from dig.xgraph.method import SubgraphX
+
 from src.explainers import GraphSVX
 from src.data import prepare_data
 from src.train import evaluate, test
@@ -34,8 +36,8 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
         return predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold)
     elif explainability_method.lower() == "graphsvx_only":
         return predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold = True)
-    # elif explainability_method.lower() == "subgraphx":
-    #     return predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
+    elif explainability_method.lower() == "subgraphx":
+        return predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
     else:
@@ -528,6 +530,9 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
 
     return sorted_ranking
+
+def predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G):
+    return None
 
 #legacy methods
 
