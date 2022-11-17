@@ -1,6 +1,5 @@
 ### Module file
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
-import sys
 
 import heapq
 import pandas as pd
@@ -31,13 +30,50 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False):
     if explainability_method.lower() == "gnnexplainer":
-        return predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold)
+        return predict_candidate_genes_gnn_explainer(model,
+                                                     dataset,
+                                                     predictions,
+                                                     disease_Id,
+                                                     explanation_nodes_ratio,
+                                                     masks_for_seed,
+                                                     num_hops,
+                                                     G,
+                                                     num_pos,
+                                                     threshold)
+
     elif explainability_method.lower() == "graphsvx":
-        return predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold)
+        return predict_candidate_genes_graphsvx(model,
+                                                dataset,
+                                                predictions,
+                                                disease_Id,
+                                                explanation_nodes_ratio,
+                                                masks_for_seed,
+                                                num_hops,
+                                                G,
+                                                num_pos,
+                                                threshold)
+
     elif explainability_method.lower() == "graphsvx_only":
-        return predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G, num_pos, threshold = True)
+        return predict_candidate_genes_graphsvx_only(model,
+                                                     dataset,
+                                                     predictions,
+                                                     disease_Id,
+                                                     explanation_nodes_ratio,
+                                                     masks_for_seed,
+                                                     num_hops,
+                                                     G,
+                                                     num_pos,
+                                                     threshold = True)
+
     elif explainability_method.lower() == "subgraphx":
-        return predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed, num_hops, G)
+        return predict_candidate_genes_subgraphx(model,
+                                                 dataset,
+                                                 predictions,
+                                                 disease_Id,
+                                                 explanation_nodes_ratio,
+                                                 masks_for_seed,
+                                                 num_hops,
+                                                 G)
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
     else:
