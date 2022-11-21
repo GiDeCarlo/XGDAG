@@ -73,7 +73,7 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                  explanation_nodes_ratio,
                                                  masks_for_seed,
                                                  num_hops,
-                                                 G)
+                                                 G) 
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
     else:
