@@ -12,8 +12,6 @@ import torch
 import torch_geometric
 from torch_geometric.nn.models import GNNExplainer
 
-from dig.xgraph.method import SubgraphX
-
 from src.explainers import GraphSVX
 from src.data import prepare_data
 from src.train import evaluate, test
@@ -76,7 +74,8 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                  predictions,
                                                  explanation_nodes_ratio,
                                                  num_hops,
-                                                 G
+                                                 G,
+                                                 num_pos = num_pos
                                                 ) 
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
@@ -584,11 +583,11 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_nodes_ratio, num_hops, G, num_pos='all'):
 
     ranking = {}
-
+    candidates = {}
     # Get nodes with positive labels
     labels = dataset.y.to('cpu')
     nodes_with_idxs = {}
-
+    node_list = list(G.nodes)
     i = 0
     for node in G:
         if labels[i] == 0:
@@ -607,10 +606,13 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
         num_pos = len(nodes_with_idxs)
 
     nodes_explained = 0
-
+    
     for node in tqdm(nodes_with_idxs):
-
-        print('[+] Working with node', node, end='...')
+        if G.degree[node] > 10:
+            continue
+        # print('[+] Working with node', node, end='...')
+        # print("Neighbors:", G.degree[node])
+        candidates[node] = {}
 
         idx = nodes_with_idxs[node]
         prediction = predictions[idx]
@@ -630,22 +632,32 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
 
         ori_nodes_idxs = [original_mapping[n].item() for n in best_coalition['coalition']]
 
-        for coalition_node in ori_nodes_idxs:
-            # if node is LP
-            if predictions[coalition_node] == 1:
-                if coalition_node not in ranking:
-                    ranking[coalition_node] = [1,score]
-                else:
-                    ranking[coalition_node][0] += 1
-                    ranking[coalition_node][1] += score
+        for coalition_node_idx in ori_nodes_idxs:
+            if coalition_node_idx != idx:
+                coalition_node_name = node_list[coalition_node_idx]
+                
+                if predictions[coalition_node_idx] == 1: # if node is LP
+                    candidates[node][coalition_node_name] = score
 
         nodes_explained += 1
         if num_pos != len(nodes_with_idxs) and nodes_explained >= num_pos:
             break
         
-        print('Done')
+        # print('Done')
 
+    
+    for seed in candidates:
+        
+        for candidate in candidates[seed]:
+            if candidate not in ranking:
+                ranking[candidate] = [1, candidates[seed][candidate]]
+            else:
+                ranking[candidate][0] += 1
+                ranking[candidate][1] += candidates[seed][candidate]
+
+    
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
+
 
     return sorted_ranking
 
