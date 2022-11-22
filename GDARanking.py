@@ -608,8 +608,8 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
     nodes_explained = 0
     
     for node in tqdm(nodes_with_idxs):
-        if G.degree[node] > 10:
-            continue
+        # if G.degree[node] > 10:
+        #     continue
         # print('[+] Working with node', node, end='...')
         # print("Neighbors:", G.degree[node])
         candidates[node] = {}
