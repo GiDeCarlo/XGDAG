@@ -622,6 +622,7 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
                 node_idx=idx,
                 num_hops=1,
             )
+
         max_nodes = int(round(len(original_mapping) * explanation_nodes_ratio))
 
         _, explanation_results, _ = explainer(dataset.x, dataset.edge_index, node_idx=idx, max_nodes=max_nodes)
