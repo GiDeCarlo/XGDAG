@@ -6,7 +6,7 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 import random
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 import torch
 import torch_geometric
