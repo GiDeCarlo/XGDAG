@@ -5,13 +5,26 @@ from GDARanking import predict_candidate_genes
 
 import sys
 
-args = sys.argv
+disease_Ids = ['C0006142', 'C0009402', 'C0023893', 'C0036341', 'C0376358']
+methods = ['gnnexplainer', 'gnnexplainer_only', 'graphsvx', 'graphsvx_only', 'subgraphx']
 
-if len(args) < 2:
+args = sys.argv
+if len(args) < 3:
+    if args[1] == '-h' or args[1] == '--help':
+        print('Available diseases:\n \tC0006142\n \tC0009402\n \tC0023893\n \tC0036341\n \tC0376358')
+        print('Available methods:\n \gnnexplainer\n \gnnexplainer_only\n \graphsvx\n \graphsvx_only\n \subgraphx')
+    else:
+        print('[ERR] Wrong usage')
     print('Insert DiseaseId')
 
 disease_Id = args[1]
 METHOD = args[2]
+
+if disease_Id not in disease_Ids:
+    print('[ERR] Wrong disease ID')
+
+if METHOD not in methods:
+    print('[ERR] Method')
 
 
 classes     = ['P', 'LP', 'WN', 'LN', 'RN']

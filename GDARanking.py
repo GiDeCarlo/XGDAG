@@ -27,7 +27,6 @@ random.seed(SEED)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ###new methods
-
 def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False):
     if explainability_method.lower() == "gnnexplainer":
         return predict_candidate_genes_gnn_explainer(model,
@@ -41,6 +40,19 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                      num_pos,
                                                      threshold
                                                     )
+    
+    elif explainability_method.lower() == "gnnexplainer_only":
+        return predict_candidate_genes_gnn_explainer_only(model,
+                                                          dataset,
+                                                          predictions,
+                                                          disease_Id,
+                                                          explanation_nodes_ratio,
+                                                          masks_for_seed,
+                                                          num_hops,
+                                                          G,
+                                                          num_pos,
+                                                          threshold
+                                                          )
 
     elif explainability_method.lower() == "graphsvx":
         return predict_candidate_genes_graphsvx(model,
