@@ -1,4 +1,4 @@
-name: xgdag
+name: xgdag_gpu
 channels:
   - pytorch
   - pyg
@@ -210,4 +210,4 @@ dependencies:
     - tabulate==0.9.0
     - tensorboardx==2.5.1
     - typing-inspect==0.8.0
-prefix: C:\Users\Mastro\anaconda3\envs\xgdag
+prefix: /home/ubuntu/anaconda3/envs/xgdag_gpu
