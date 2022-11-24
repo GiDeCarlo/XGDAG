@@ -200,4 +200,4 @@ dependencies:
   - zipp=3.8.0=py310haa95532_0
   - zlib=1.2.12=h8cc25b3_2
   - zstd=1.5.2=h19a0ad4_0
-prefix: C:\Users\Mastro\anaconda3\envs\xgdag
+prefix: /home/ubuntu/anaconda3/envs/xgdag
