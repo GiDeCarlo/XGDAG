@@ -12,7 +12,7 @@ args = sys.argv
 if len(args) < 3:
     if args[1] == '-h' or args[1] == '--help':
         print('Available diseases:\n \tC0006142\n \tC0009402\n \tC0023893\n \tC0036341\n \tC0376358')
-        print('Available methods:\n \gnnexplainer\n \gnnexplainer_only\n \graphsvx\n \graphsvx_only\n \subgraphx')
+        print('Available methods:\n \tgnnexplainer\n \tgnnexplainer_only\n \tgraphsvx\n \tgraphsvx_only\n \tsubgraphx')
     else:
         print('[ERR] Wrong usage')
     print('Insert DiseaseId')
