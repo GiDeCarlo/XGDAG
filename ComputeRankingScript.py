@@ -7,11 +7,11 @@ import sys
 
 args = sys.argv
 
-if len(sys.arg) < 2:
+if len(args) < 2:
     print('Insert DiseaseId')
 
 disease_Id = args[1]
-METHOD = [2]
+METHOD = args[2]
 
 
 classes     = ['P', 'LP', 'WN', 'LN', 'RN']
