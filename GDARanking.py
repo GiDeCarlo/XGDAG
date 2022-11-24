@@ -28,6 +28,9 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ###new methods
 def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False):
+    
+    print('[i] Device:', device)
+
     if explainability_method.lower() == "gnnexplainer":
         return predict_candidate_genes_gnn_explainer(model,
                                                      dataset,
