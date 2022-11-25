@@ -2,20 +2,20 @@
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 
 import heapq
-import pandas as pd
-import networkx as nx
-import numpy as np
 import random
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
-from tqdm.contrib.concurrent import process_map
+import networkx as nx
+import multiprocessing
 
 import torch
 import torch_geometric
 from torch_geometric.nn.models import GNNExplainer
 
 from src.explainers import GraphSVX
-from src.data import prepare_data
-from src.train import evaluate, test
+# from src.data import prepare_data
+# from src.train import evaluate, test
 
 import SubgraphX
 
@@ -27,8 +27,11 @@ random.seed(SEED)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-###new methods
-def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method, explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1, G=None, num_pos = "all", threshold = False, num_workers = 1):
+### New methods
+### Wrapper function
+def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method,
+                            explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1,
+                            G=None, num_pos = "all", threshold = False, num_workers = 1):
     
     print('[i] Device:', device)
 
@@ -91,7 +94,8 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                  explanation_nodes_ratio,
                                                  num_hops,
                                                  G,
-                                                 num_pos = num_pos
+                                                 num_pos = num_pos,
+                                                 num_workers=num_workers
                                                 ) 
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
@@ -596,93 +600,80 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 
     return sorted_ranking
 
-def run_explanation(positive_node, model, dataset, predictions, explanation_nodes_ratio, num_hops, G):
-        node = positive_node[0]
-        idx = positive_node[1]
-        candidates = {}
-        node_list = list(G.nodes)
-        explainer = SubgraphX.SubgraphX(model,
-                        num_classes=5,
-                        device=device,
-                        num_hops=num_hops,
-                        min_atoms=2,
-                        explain_graph=False,
-                        reward_method='nc_mc_l_shapley')
-        
-        # nodes_explained = 0
-        
-        
-            # print('[+] Working with node', node, end='...')
-            # print("Neighbors:", G.degree[node])
-        candidates[node] = {}
 
-        prediction = predictions[idx]
+def run_explanation(args):
+    node    = args[0]
+    model   = args[1]
+    G       = args[2]
+    predictions = args[3]
+    num_hops    = args[4]
+    edge_index  = args[5]
+    explanation_nodes_ratio = args[6]
+    x = args[7]
 
-        original_mapping, _, _, _ = SubgraphX.k_hop_subgraph_with_default_whole_graph(
-                edge_index=dataset.edge_index,
-                node_idx=idx,
-                num_hops=1,
-            )
+    pid = multiprocessing.current_process().pid
 
-        max_nodes = int(round(len(original_mapping) * explanation_nodes_ratio))
+    print('[', pid, '] New worker created. Explaining node', node)
 
-        _, explanation_results, _ = explainer(dataset.x, dataset.edge_index, node_idx=idx, max_nodes=max_nodes)
+    nodes_list = list(G.nodes)
+    idx = nodes_list.index(node)
+    prediction = predictions[idx]
 
-        best_coalition = SubgraphX.find_closest_node_result_fixed_nodes(explanation_results[prediction], max_nodes=max_nodes)
-        # Get score computed by SubgraphX for the entire subgraph
-        score = best_coalition['P']
-
-        ori_nodes_idxs = [original_mapping[n].item() for n in best_coalition['coalition']]
-
-        for coalition_node_idx in ori_nodes_idxs:
-            if coalition_node_idx != idx:
-                coalition_node_name = node_list[coalition_node_idx]
-                
-                if predictions[coalition_node_idx] == 1: # if node is LP
-                    candidates[node][coalition_node_name] = score
-
-        # nodes_explained += 1
-        
-        # print('Done')
-
-        return candidates
-        
-def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_nodes_ratio, num_hops, G, num_pos='all', num_workers=1):
-
-    ranking = {}
+    candidates = {}
+    candidates[node] = {}
+    # get candidates for node
+    explainer = SubgraphX.SubgraphX(model,
+                    num_classes=5,
+                    device=device,
+                    num_hops=num_hops,
+                    min_atoms=2,
+                    explain_graph=False,
+                    reward_method='nc_mc_l_shapley')
     
-    # Get nodes with positive labels
-    labels = dataset.y.to('cpu')
+    original_mapping, _, _, _ = SubgraphX.k_hop_subgraph_with_default_whole_graph(
+            edge_index=edge_index,
+            node_idx=idx,
+            num_hops=1,
+        )
     
-    node_list = list(G.nodes)
-    i = 0
-    # for node in G:
-    #     if labels[i] == 0:
-    #         nodes_with_idxs[node] = i
-    #     i += 1
-    parameters = []
-    for i in range(len(node_list)):
-        if labels[i] == 0 and G.degree[node_list[i]] < 5:
-            parameters.append([(node_list[i], i), model, dataset, predictions, explanation_nodes_ratio, num_hops, G])
+    max_nodes = int(round(len(original_mapping) * explanation_nodes_ratio))
 
+    _, explanation_results, _ = explainer(x, edge_index, node_idx=idx, max_nodes=max_nodes)
 
-    
-        # for seed in candidates:
+    best_coalition = SubgraphX.find_closest_node_result_fixed_nodes(explanation_results[prediction], max_nodes=max_nodes)
+
+    score = best_coalition['P'] # Get score computed by SubgraphX for the entire subgraph
+
+    ori_nodes_idxs = [original_mapping[n].item() for n in best_coalition['coalition']]
+
+    for coalition_node_idx in ori_nodes_idxs:
+        if coalition_node_idx != idx:
+            coalition_node_name = nodes_list[coalition_node_idx]
             
-        #     for candidate in candidates[seed]:
-        #         if candidate not in ranking:
-        #             ranking[candidate] = [1, candidates[seed][candidate]]
-        #         else:
-        #             ranking[candidate][0] += 1
-        #             ranking[candidate][1] += candidates[seed][candidate]
+            if predictions[coalition_node_idx] == 1: # if node is LP
+                candidates[node][coalition_node_name] = score
+    
+    print('[', pid, '] Worker on node', node, 'done')
 
-        
-        # sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
+    return candidates
 
-    all_candidates_list = process_map(run_explanation,parameters, max_workers = num_workers)
+def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_nodes_ratio, num_hops, G, num_pos='all', num_workers=1):
+    labels = dataset.y.to('cpu')
+    node_list = list(G.nodes)
+
+    parameters_ll = []
+    # Get positive nodes
+    for i in range(len(node_list)):
+        node = node_list[i]
+        if labels[i] == 0:
+            parameters_ll.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x])
+    
+    p = multiprocessing.Pool(num_workers)
+    candidates_list = p.map(run_explanation, parameters_ll)
 
     ranking = {}
-    for candidates in all_candidates_list:
+
+    for candidates in candidates_list:
         for seed in candidates:
             for candidate in candidates[seed]:
                 if candidate not in ranking:
@@ -692,6 +683,7 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
                     ranking[candidate][1] += candidates[seed][candidate]
 
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
+
     return sorted_ranking
 
 #legacy methods
