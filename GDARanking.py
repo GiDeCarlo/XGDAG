@@ -666,6 +666,8 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
         print('\t[i] Passed', num_workers, 'as num_cores, but is seems that you have only', host_cpu_count,\
             'to avoid errors, num_cores is set to', host_cpu_count)
         num_workers = host_cpu_count
+    
+    print('[i] Using', num_workers, 'cores')
 
     parameters_ll = []
     # Get positive nodes
