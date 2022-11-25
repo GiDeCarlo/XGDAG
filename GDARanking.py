@@ -676,6 +676,10 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
         if labels[i] == 0:
             parameters_ll.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x])
     
+    
+    if device == 'cuda':
+        multiprocessing.set_start_method('spawn')
+
     p = multiprocessing.Pool(num_workers)
     candidates_list = p.map(run_explanation, parameters_ll)
 
