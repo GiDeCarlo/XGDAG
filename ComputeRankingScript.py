@@ -35,7 +35,7 @@ dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False)
 
 preds, probs, model = predict_from_saved_model(model_name + '_40000_0_0005', dataset, classes, save_to_file=False)
 
-ranking = predict_candidate_genes(model,
+ranking, candidates = predict_candidate_genes(model,
                                   dataset,
                                   preds,
                                   explainability_method=METHOD,
@@ -49,3 +49,8 @@ filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_xgdag_' +
 with open(filename, 'w') as f:
      for line in ranking:
         f.write(line + '\n')
+
+filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_explained_genes_xgdag_' + METHOD.lower() + '.txt'
+with open(filename, 'w') as f:
+     for gene in candidates:
+        f.write(gene + '\n')

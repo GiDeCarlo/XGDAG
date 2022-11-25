@@ -623,8 +623,8 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
     nodes_explained = 0
     
     for node in tqdm(nodes_with_idxs):
-        # if G.degree[node] > 10:
-        #     continue
+        if G.degree[node] > 50:
+            continue
         # print('[+] Working with node', node, end='...')
         # print("Neighbors:", G.degree[node])
         candidates[node] = {}
@@ -675,7 +675,7 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
     sorted_ranking  = sorted(ranking, key=lambda x: (ranking[x][0], ranking[x][1]), reverse=True)
 
 
-    return sorted_ranking
+    return sorted_ranking, candidates
 
 #legacy methods
 
