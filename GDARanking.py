@@ -669,13 +669,18 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
     
     print('[i] Using', num_workers, 'cores')
 
+    max_degree = 20
+
+    print('[i] Filtering seed genes with more than', max_degree, 'degree to reduce computational time of SubgraphX.')
+
     parameters_ll = []
     # Get positive nodes
     for i in range(len(node_list)):
         node = node_list[i]
-        if labels[i] == 0:
+        if labels[i] == 0 and G.degree[node] < max_degree: # Degree filter
             parameters_ll.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x])
     
+    print('[i]', len(parameters_ll), 'seed genes selected.')
     
     if device == 'cuda':
         multiprocessing.set_start_method('spawn')

@@ -15,7 +15,7 @@ def check_args(args):
         if len(args) == 2:
             if args[1] == '-h' or args[1] == '--help':
                 print('\n\n[Usage]: python ComputeRankingScript.py disease_id explainability_method num_cores\n')
-                print('Available diseases:\n \tC0006142\n \tC0009402\n \tC0023893\n \tC0036341\n \tC0376358\n')
+                print('Available diseases:\n \tC0006142\n \tC0009402\n \tC0023893\n \tC0036341\n \tC0376358\tType all to compute the ranking for all the available diseases\n')
                 print('Available methods:\n \tgnnexplainer\n \tgnnexplainer_only\n \tgraphsvx\n \tgraphsvx_only\n \tsubgraphx\n')
                 print('num_cores: define the number of cores to parallelize the explainability method\n\n')
         else:
@@ -26,7 +26,7 @@ def check_args(args):
     METHOD = args[2]
     num_cpus = int(args[3])
 
-    if disease_Id not in disease_Ids:
+    if disease_Id not in disease_Ids and disease_Id.lower() != 'all':
         print('\n[ERR] Disease ID', disease_Id, 'not present in the database\n')
         return -1
 
@@ -40,18 +40,7 @@ def check_args(args):
     
     return disease_Id, METHOD, num_cpus
 
-if __name__ == '__main__':
-    t_start = perf_counter()
-
-    args = check_args(sys.argv)
-
-    if args == -1:
-        sys.exit()
-    
-    disease_Id = args[0]
-    METHOD = args[1]
-    num_cpus = args[2]
-
+def ranking(disease_Id, METHOD, num_cpus):
     model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
     graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
@@ -80,6 +69,28 @@ if __name__ == '__main__':
             f.write(line + '\n')
 
     print('ok')
+
+if __name__ == '__main__':
+    t_start = perf_counter()
+
+    args = check_args(sys.argv)
+
+    if args == -1:
+        sys.exit()
     
+    disease_Id = args[0]
+    METHOD = args[1]
+    num_cpus = args[2]
+
+    if disease_Id == 'all':
+        print('[i] Computing the ranking for', disease_Ids, '(', len(disease_Ids), ')', 'diseases.')
+    else:
+        print('[i] Computing the ranking for', disease_Id)
+        disease_Ids = [disease_Id]
+    
+    for disease_Id in disease_Ids:
+        print('\t[i] Starting', disease_Id)
+        ranking(disease_Id, METHOD, num_cpus)
+
     t_end = perf_counter()
     print('[i] Elapsed time:', round(t_end - t_start, 3))
