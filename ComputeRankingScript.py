@@ -3,8 +3,8 @@ from CreateDatasetv2 import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
 
+import os
 import sys
-from os import path
 from time import perf_counter
 
 disease_Ids = ['C0006142', 'C0009402', 'C0023893', 'C0036341', 'C0376358']
@@ -72,7 +72,7 @@ def ranking(disease_Id, METHOD, num_cpus, filename):
 def sanitized_input(prompt, accepted_values):
     res = input(prompt).strip().lower()
     if res not in accepted_values:
-        sanitized_input(prompt, accepted_values)
+        return sanitized_input(prompt, accepted_values)
     return res
 
 if __name__ == '__main__':
@@ -87,22 +87,23 @@ if __name__ == '__main__':
     METHOD = args[1]
     num_cpus = args[2]
 
-    filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_xgdag_' + METHOD.lower() + '.txt'
+    
 
-    if disease_Id == 'all':
-        print('[i] Computing the ranking for', disease_Ids, '(', len(disease_Ids), ')', 'diseases.')
-    else:
-        print('[i] Computing the ranking for', disease_Id)
+    if disease_Id != 'all':
         disease_Ids = [disease_Id]
     
+    print('[i] Computing the ranking for', disease_Ids, '(', len(disease_Ids), ')', 'disease(s).')
+    
     for disease_Id in disease_Ids:
-        print('\t[i] Starting', disease_Id)
-        
+        print('[i] Starting', disease_Id)
+
+        filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_xgdag_' + METHOD.lower() + '.txt'
+
         res = ''
-        if path.exists(filename):
-            res = sanitized_input('[+] A raking for disease', disease_Id, \
-                'has already been computed with', METHOD, 
-                '. Do you want to overwrite the old ranking? (y|n)', ['y', 'n'])
+        if os.path.exists(filename):
+            res = sanitized_input('[+] A raking for disease ' + disease_Id + \
+                ' has already been computed with ' + METHOD + \
+                '. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
         
         if res == 'n':
             print('[i] Skipping disease', disease_Id)
