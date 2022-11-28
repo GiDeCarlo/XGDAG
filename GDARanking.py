@@ -687,6 +687,7 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
 
     p = multiprocessing.Pool(num_workers)
     candidates_list = p.map(run_explanation, parameters_ll)
+    p.close()
 
     ranking = {}
 

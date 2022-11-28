@@ -4,6 +4,7 @@ from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
 
 import sys
+from os import path
 from time import perf_counter
 
 disease_Ids = ['C0006142', 'C0009402', 'C0023893', 'C0036341', 'C0376358']
@@ -40,7 +41,7 @@ def check_args(args):
     
     return disease_Id, METHOD, num_cpus
 
-def ranking(disease_Id, METHOD, num_cpus):
+def ranking(disease_Id, METHOD, num_cpus, filename):
     model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
     graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
@@ -60,8 +61,6 @@ def ranking(disease_Id, METHOD, num_cpus):
                                     num_pos="all",
                                     num_workers=num_cpus)
 
-    filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_xgdag_' + METHOD.lower() + '.txt'
-
     print('[+] Saving ranking to file', filename, end='...')
 
     with open(filename, 'w') as f:
@@ -69,6 +68,12 @@ def ranking(disease_Id, METHOD, num_cpus):
             f.write(line + '\n')
 
     print('ok')
+
+def sanitized_input(prompt, accepted_values):
+    res = input(prompt).strip().lower()
+    if res not in accepted_values:
+        sanitized_input(prompt, accepted_values)
+    return res
 
 if __name__ == '__main__':
     t_start = perf_counter()
@@ -82,6 +87,8 @@ if __name__ == '__main__':
     METHOD = args[1]
     num_cpus = args[2]
 
+    filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_xgdag_' + METHOD.lower() + '.txt'
+
     if disease_Id == 'all':
         print('[i] Computing the ranking for', disease_Ids, '(', len(disease_Ids), ')', 'diseases.')
     else:
@@ -90,7 +97,18 @@ if __name__ == '__main__':
     
     for disease_Id in disease_Ids:
         print('\t[i] Starting', disease_Id)
-        ranking(disease_Id, METHOD, num_cpus)
+        
+        res = ''
+        if path.exists(filename):
+            res = sanitized_input('[+] A raking for disease', disease_Id, \
+                'has already been computed with', METHOD, 
+                '. Do you want to overwrite the old ranking? (y|n)', ['y', 'n'])
+        
+        if res == 'n':
+            print('[i] Skipping disease', disease_Id)
+            continue
+
+        ranking(disease_Id, METHOD, num_cpus, filename)
 
     t_end = perf_counter()
     print('[i] Elapsed time:', round(t_end - t_start, 3))
