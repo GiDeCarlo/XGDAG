@@ -683,7 +683,7 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
     print('[i]', len(parameters_ll), 'seed genes selected.')
     
     if device == 'cuda':
-        multiprocessing.set_start_method('spawn')
+        multiprocessing.set_start_method('spawn', force=True)
 
     p = multiprocessing.Pool(num_workers)
     candidates_list = p.map(run_explanation, parameters_ll)
