@@ -94,8 +94,17 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                  explanation_nodes_ratio,
                                                  num_hops,
                                                  G,
-                                                 num_pos = num_pos,
                                                  num_workers=num_workers
+                                                )
+    elif explainability_method.lower() == "subgraphx_only":
+        return predict_candidate_genes_subgraphx(model,
+                                                 dataset,
+                                                 predictions,
+                                                 explanation_nodes_ratio,
+                                                 num_hops,
+                                                 G,
+                                                 num_workers=num_workers,
+                                                 num_classes=2
                                                 ) 
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
@@ -486,7 +495,6 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
     labels      = dataset.y.to('cpu')
     edge_index  = dataset.edge_index.to('cpu')
     
-
     ranking         = {}
     candidates      = {}
     nodes_with_idxs = {}
@@ -600,7 +608,6 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 
     return sorted_ranking
 
-
 def run_explanation(args):
     node    = args[0]
     model   = args[1]
@@ -610,6 +617,7 @@ def run_explanation(args):
     edge_index  = args[5]
     explanation_nodes_ratio = args[6]
     x = args[7]
+    num_classes = args[8]
 
     pid = multiprocessing.current_process().pid
 
@@ -623,7 +631,7 @@ def run_explanation(args):
     candidates[node] = {}
     # get candidates for node
     explainer = SubgraphX.SubgraphX(model,
-                    num_classes=5,
+                    num_classes=num_classes,
                     device=device,
                     num_hops=num_hops,
                     min_atoms=2,
@@ -657,7 +665,7 @@ def run_explanation(args):
 
     return candidates
 
-def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_nodes_ratio, num_hops, G, num_pos='all', num_workers=1):
+def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_nodes_ratio, num_hops, G, num_workers=1, num_classes=5):
     labels = dataset.y.to('cpu')
     node_list = list(G.nodes)
 
@@ -673,20 +681,20 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
 
     print('[i] Filtering seed genes with more than', max_degree, 'degree to reduce computational time of SubgraphX.')
 
-    parameters_ll = []
+    parameters_l = []
     # Get positive nodes
     for i in range(len(node_list)):
         node = node_list[i]
         if labels[i] == 0 and G.degree[node] < max_degree: # Degree filter
-            parameters_ll.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x])
+            parameters_l.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x, num_classes])
     
-    print('[i]', len(parameters_ll), 'seed genes selected.')
+    print('[i]', len(parameters_l), 'seed genes selected.')
     
     if device == 'cuda':
         multiprocessing.set_start_method('spawn', force=True)
 
     p = multiprocessing.Pool(num_workers)
-    candidates_list = p.map(run_explanation, parameters_ll)
+    candidates_list = p.map(run_explanation, parameters_l)
     p.close()
 
     ranking = {}

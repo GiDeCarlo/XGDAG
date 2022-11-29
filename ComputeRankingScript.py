@@ -2,14 +2,14 @@ from GNNTrain import predict_from_saved_model
 from CreateDatasetv2 import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
+import CreateDatasetv2_binary 
 
 import os
 import sys
 from time import perf_counter
 
 disease_Ids = ['C0006142', 'C0009402', 'C0023893', 'C0036341', 'C0376358']
-methods = ['gnnexplainer', 'gnnexplainer_only', 'graphsvx', 'graphsvx_only', 'subgraphx']
-classes     = ['P', 'LP', 'WN', 'LN', 'RN']
+methods = ['gnnexplainer', 'gnnexplainer_only', 'graphsvx', 'graphsvx_only', 'subgraphx', 'subgraphx_only']
 
 def check_args(args):
     if len(args) < 3:
@@ -41,14 +41,22 @@ def check_args(args):
     
     return disease_Id, METHOD, num_cpus
 
-def ranking(disease_Id, METHOD, num_cpus, filename):
+def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
+
     model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
     graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
+    classes     = ['P', 'LP', 'WN', 'LN', 'RN']
 
-    dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+    if modality == 'binary':
+        model_name += '_binary'
+        classes = ['P', 'U']
+        dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+    else:
+        dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False)
 
-    preds, probs, model = predict_from_saved_model(model_name + '_40000_0_0005', dataset, classes, save_to_file=False)
+    model_name += '_40000_0_0005'
 
+    preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False)
 
     ranking = predict_candidate_genes(model,
                                     dataset,
@@ -87,7 +95,9 @@ if __name__ == '__main__':
     METHOD = args[1]
     num_cpus = args[2]
 
-    
+    modality = 'multiclass'
+    if '_only' in METHOD:
+        modality = 'binary'
 
     if disease_Id != 'all':
         disease_Ids = [disease_Id]
@@ -97,7 +107,12 @@ if __name__ == '__main__':
     for disease_Id in disease_Ids:
         print('[i] Starting', disease_Id)
 
-        filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_xgdag_' + METHOD.lower() + '.txt'
+        filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
+
+        if modality == 'multiclass':
+            filename += 'xgdag_' + METHOD.lower() + '.txt'
+        else:
+            filename += METHOD.lower().replace("_only", "") + '.txt'
 
         res = ''
         if os.path.exists(filename):
@@ -109,7 +124,7 @@ if __name__ == '__main__':
             print('[i] Skipping disease', disease_Id)
             continue
 
-        ranking(disease_Id, METHOD, num_cpus, filename)
+        ranking(disease_Id, METHOD, num_cpus, filename, modality)
 
     t_end = perf_counter()
     print('[i] Elapsed time:', round(t_end - t_start, 3))

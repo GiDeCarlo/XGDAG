@@ -110,7 +110,6 @@ def predict_from_saved_model(model_name, data, classes, files_name='', plot_resu
         print('[i] plot_results set to', plot_results, 'but save_to_file set to', save_to_file)
         print('with such configuration, only the report will be saved but not the confusion matrices')
 
-
     data = data.to(device)
     
     model_path  = PATH_TO_MODELS + model_name
