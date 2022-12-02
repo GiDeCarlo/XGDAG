@@ -134,7 +134,7 @@ if __name__ == '__main__':
                     '. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
             
             if res == 'n':
-                print('[i] Skipping disease', disease_Id)
+                print('[i] Skipping disease', disease_Id, 'with method', METHOD)
                 continue
             else:
                 ranking(disease_Id, METHOD, num_cpus, filename, modality)
