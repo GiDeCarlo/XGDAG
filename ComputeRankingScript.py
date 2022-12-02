@@ -22,8 +22,8 @@ def check_args(args):
         if len(args) == 2:
             if args[1] == '-h' or args[1] == '--help':
                 print('\n\n[Usage]: python ComputeRankingScript.py disease_id explainability_method num_cores\n')
-                print('Available diseases:\n \tC0006142\n \tC0009402\n \tC0023893\n \tC0036341\n \tC0376358\tType all to compute the ranking for all the available diseases\n')
-                print('Available methods:\n \tgnnexplainer\n \tgnnexplainer_only\n \tgraphsvx\n \tgraphsvx_only\n \tsubgraphx\n')
+                print('Available diseases:\n', disease_Ids, '\n\tType all to compute the ranking for all the available diseases\n')
+                print('Available methods:\n', methods, '\n')
                 print('num_cores: define the number of cores to parallelize the explainability method\n\n')
         else:
             print('\n\n[ERR] Wrong input parameters: use -h or --help to print the usage\n\n')
