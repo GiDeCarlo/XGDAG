@@ -19,12 +19,11 @@ methods = ['gnnexplainer',  'gnnexplainer_only',\
 
 def check_args(args):
     if len(args) < 3:
-        if len(args) == 2:
-            if args[1] == '-h' or args[1] == '--help':
-                print('\n\n[Usage]: python ComputeRankingScript.py disease_id explainability_method num_cores\n')
-                print('Available diseases:\n', disease_Ids, '\nType all to compute the ranking for all the available diseases\n')
-                print('Available methods:\n', methods, '\nType all to compute the ranking for all the available methods\n')
-                print('num_cores: define the number of cores to parallelize the explainability method\n\n')
+        if len(args) == 2 and (args[1] == '-h' or args[1] == '--help'):
+            print('\n\n[Usage]: python ComputeRankingScript.py disease_id explainability_method num_cores\n')
+            print('Available diseases:\n', disease_Ids, '\nType all to compute the ranking for all the available diseases\n')
+            print('Available methods:\n', methods, '\nType all to compute the ranking for all the available methods\n')
+            print('num_cores: define the number of cores to parallelize the explainability method\n\n')
         else:
             print('\n\n[ERR] Wrong input parameters: use -h or --help to print the usage\n\n')
         return -1
