@@ -8,8 +8,14 @@ import os
 import sys
 from time import perf_counter
 
-disease_Ids = ['C0006142', 'C0009402', 'C0023893', 'C0036341', 'C0376358']
-methods = ['gnnexplainer', 'gnnexplainer_only', 'graphsvx', 'graphsvx_only', 'subgraphx', 'subgraphx_only']
+disease_Ids = ['C0006142',  'C0009402', 'C0023893', \
+               'C0036341',  'C0376358', 'C3714756', \
+               'C0860207',  'C0011581', 'C0005586', \
+               'C0001973']
+
+methods = ['gnnexplainer',  'gnnexplainer_only',\
+           'graphsvx',      'graphsvx_only',    \
+           'subgraphx',     'subgraphx_only']
 
 def check_args(args):
     if len(args) < 3:
@@ -31,7 +37,7 @@ def check_args(args):
         print('\n[ERR] Disease ID', disease_Id, 'not present in the database\n')
         return -1
 
-    if METHOD not in methods:
+    if METHOD not in methods and METHOD.lower() != 'all':
         print('\n[ERR] Method', METHOD, 'not available\n')
         return -1
     
@@ -102,6 +108,9 @@ if __name__ == '__main__':
     if disease_Id != 'all':
         disease_Ids = [disease_Id]
     
+    if METHOD != 'all':
+        methods = [METHOD]
+    
     print('[i] Computing the ranking for', disease_Ids, '(', len(disease_Ids), ')', 'disease(s).')
     
     for disease_Id in disease_Ids:
@@ -109,22 +118,23 @@ if __name__ == '__main__':
 
         filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
 
-        if modality == 'multiclass':
-            filename += 'xgdag_' + METHOD.lower() + '.txt'
-        else:
-            filename += METHOD.lower().replace("_only", "") + '.txt'
+        for METHOD in methods:
+            if modality == 'multiclass':
+                filename += 'xgdag_' + METHOD.lower() + '.txt'
+            else:
+                filename += METHOD.lower().replace("_only", "") + '.txt'
 
-        res = ''
-        if os.path.exists(filename):
-            res = sanitized_input('[+] A raking for disease ' + disease_Id + \
-                ' has already been computed with ' + METHOD + \
-                '. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
-        
-        if res == 'n':
-            print('[i] Skipping disease', disease_Id)
-            continue
+            res = ''
+            if os.path.exists(filename):
+                res = sanitized_input('[+] A raking for disease ' + disease_Id + \
+                    ' has already been computed with ' + METHOD + \
+                    '. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
+            
+            if res == 'n':
+                print('[i] Skipping disease', disease_Id)
+                continue
 
-        ranking(disease_Id, METHOD, num_cpus, filename, modality)
+            ranking(disease_Id, METHOD, num_cpus, filename, modality)
 
     t_end = perf_counter()
     print('[i] Elapsed time:', round(t_end - t_start, 3))
