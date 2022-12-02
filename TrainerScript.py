@@ -35,5 +35,5 @@ if __name__ == '__main__':
 
     for disease_Id in disease_Ids:
         print('[+] Training', disease_Id)
-        trainGNN(mode='binary')
-        trainGNN(mode='multiclass')
+        trainGNN(disease_Id, mode='binary')
+        trainGNN(disease_Id, mode='multiclass')
