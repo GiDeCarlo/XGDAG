@@ -126,8 +126,6 @@ if __name__ == '__main__':
                 filename += 'xgdag_' + METHOD.lower() + '.txt'
             else:
                 filename += METHOD.lower().replace("_only", "") + '.txt'
-            
-            print(filename)
 
             res = ''
             if os.path.exists(filename):
