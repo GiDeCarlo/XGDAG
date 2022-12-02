@@ -100,9 +100,9 @@ if __name__ == '__main__':
     METHOD = args[1]
     num_cpus = args[2]
 
-    modality = 'multiclass'
-    if '_only' in METHOD:
-        modality = 'binary'
+    # modality = 'multiclass'
+    # if '_only' in METHOD:
+    #     modality = 'binary'
 
     if disease_Id != 'all':
         disease_Ids = [disease_Id]
@@ -115,13 +115,19 @@ if __name__ == '__main__':
     for disease_Id in disease_Ids:
         print('[i] Starting', disease_Id)
 
-        filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
-
         for METHOD in methods:
+            filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
+
+            modality = 'multiclass'
+            if '_only' in METHOD:
+                modality = 'binary'
+            
             if modality == 'multiclass':
                 filename += 'xgdag_' + METHOD.lower() + '.txt'
             else:
                 filename += METHOD.lower().replace("_only", "") + '.txt'
+            
+            print(filename)
 
             res = ''
             if os.path.exists(filename):
