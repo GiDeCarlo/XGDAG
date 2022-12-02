@@ -34,5 +34,6 @@ if __name__ == '__main__':
     disease_Ids = ['C3714756','C0860207','C0011581','C0005586','C0001973']
 
     for disease_Id in disease_Ids:
+        print('[+] Training', disease_Id)
         trainGNN(mode='binary')
         trainGNN(mode='multiclass')

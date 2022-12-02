@@ -4,7 +4,7 @@ from Paths import PATH_TO_IMAGES, PATH_TO_REPORTS, PATH_TO_MODELS
 
 import pandas as pd
 import seaborn as sn
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 import torch
