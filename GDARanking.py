@@ -30,8 +30,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 ### New methods
 ### Wrapper function
 def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method,
-                            explanation_nodes_ratio=1, masks_for_seed=10, num_hops = 1,
-                            G=None, num_pos = "all", threshold = False, num_workers = 1):
+                            explanation_nodes_ratio=1, masks_for_seed=10, num_hops=1,
+                            G=None, num_pos="all", threshold=False, num_workers=1):
     
     print('[i] Device:', device)
 
@@ -41,11 +41,9 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                      predictions,
                                                      disease_Id,
                                                      explanation_nodes_ratio,
-                                                     masks_for_seed,
-                                                     num_hops,
-                                                     G,
-                                                     num_pos,
-                                                     threshold
+                                                     masks_for_seed = masks_for_seed,
+                                                     num_pos = num_pos,
+                                                     G=G
                                                     )
     
     elif explainability_method.lower() == "gnnexplainer_only":
@@ -53,12 +51,10 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                           dataset,
                                                           predictions,
                                                           disease_Id,
-                                                          explanation_nodes_ratio,
-                                                          masks_for_seed,
-                                                          num_hops,
-                                                          G,
-                                                          num_pos,
-                                                          threshold
+                                                          explanation_nodes_ratio=explanation_nodes_ratio,
+                                                          masks_for_seed=masks_for_seed,
+                                                          num_pos=num_pos,
+                                                          G=G
                                                           )
 
     elif explainability_method.lower() == "graphsvx":
@@ -66,12 +62,11 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                 dataset,
                                                 predictions,
                                                 disease_Id,
-                                                explanation_nodes_ratio,
-                                                masks_for_seed,
-                                                num_hops,
-                                                G,
-                                                num_pos,
-                                                threshold
+                                                explanation_nodes_ratio=explanation_nodes_ratio,
+                                                threshold=threshold,
+                                                num_hops=num_hops,
+                                                num_pos=num_pos,
+                                                G=G
                                                 )
 
     elif explainability_method.lower() == "graphsvx_only":
@@ -79,11 +74,10 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                      dataset,
                                                      predictions,
                                                      disease_Id,
-                                                     explanation_nodes_ratio,
-                                                     masks_for_seed,
-                                                     num_hops,
-                                                     G,
-                                                     num_pos,
+                                                     explanation_nodes_ratio=explanation_nodes_ratio,
+                                                     num_hops=num_hops,
+                                                     G=G,
+                                                     num_pos=num_pos,
                                                      threshold = True
                                                     )
 
@@ -96,6 +90,7 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
                                                  G,
                                                  num_workers=num_workers
                                                 )
+
     elif explainability_method.lower() == "subgraphx_only":
         return predict_candidate_genes_subgraphx(model,
                                                  dataset,
@@ -109,7 +104,7 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
     # elif explainability_method.lower() == "edgeshaper":
     #     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
     else:
-        print("Invalid explainability method - not implemented.")
+        print("Invalid explainability method || not implemented.")
         return None
 
 def predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, masks_for_seed=10, G=None, num_pos='all'):
@@ -339,7 +334,7 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 
     return sorted_ranking
 
-def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, num_hops = 1, G=None, num_pos = "all", threshold = False):
+def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, num_hops=1, G=None, num_pos="all", threshold = False):
     # print(num_pos)
     #graphsvx params
     num_samples = 100 #number of coaliton used to apporx shapley values
@@ -475,7 +470,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 
     return sorted_ranking
 
-def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, num_hops = 1, G=None, num_pos = "all", threshold = True):
+def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, num_hops=1, G=None, num_pos="all", threshold = True):
     print(num_pos)
     #graphsvx params
     num_samples = 100 #number of coaliton used to apporx shapley values

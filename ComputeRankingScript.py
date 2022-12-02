@@ -67,8 +67,9 @@ def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
                                     dataset,
                                     preds,
                                     explainability_method=METHOD,
-                                    disease_Id=None,
+                                    disease_Id=disease_Id,
                                     explanation_nodes_ratio=1,
+                                    masks_for_seed=10,
                                     num_hops=1,
                                     G=G,
                                     num_pos="all",
@@ -116,7 +117,7 @@ if __name__ == '__main__':
 
         for METHOD in methods:
             print('[i] Starting', disease_Id, 'with method', METHOD)
-            
+
             filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
 
             modality = 'multiclass'
