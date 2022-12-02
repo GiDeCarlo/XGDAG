@@ -21,9 +21,9 @@ DISEASE_CODES = {"C0006142_Malignant_neoplasm_of_breast": "C0006142", "C0009402_
 # COMPARE_METHODS = ["DIAMOnD", "XGDAG", "XGDAG + LP", "fFlow", "NetCombo", "NetRank"]
 GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRank"]
 # COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
-COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
-
-XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubraphX", "XGDAG - SubgraphX",
+# COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubgraphX", "XGDAG - SubgraphX", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
+COMPARE_METHODS = ["XGDAG - GNNExplainer",  "XGDAG - GraphSVX", "NIAPU", "DIAMOnD", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
+XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubgraphX", "XGDAG - SubgraphX",
                 "EdgeSHAPer", "XGDAG - EdgeSHAPer"]
 
 PLOT = True
@@ -134,58 +134,64 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         precision_folds.append(precision)
         F1_folds.append(F1_score)
 
+        recall_folds_compare_methods["NIAPU"].append(recall)
+        precision_folds_compare_methods["NIAPU"].append(precision)
+        F1_folds_compare_methods["NIAPU"].append(F1_score)
+        
+
         for METHOD in COMPARE_METHODS:
-            ranking_method = []
+            if METHOD != "NIAPU":
+                ranking_method = []
 
-            if METHOD in XAI_METHODS:
-                with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking_" + METHOD.lower().replace("-", "_").replace(" ", "") + ".txt", "r", encoding="utf-8") as rankingFile:
-                    for line in rankingFile:
-                        ranking_method.append(line.strip("\n"))
-
-            elif METHOD in GUILD_METHODS:        
-                GUILD_METHOD_PATH = "Rankings/other_methods/GUILD/" + METHOD + "/" + DISEASE_NAME + "_" + METHOD + ".txt"
-
-                GUILD_scores_df = pd.read_csv(GUILD_METHOD_PATH, header = None, sep = "\t")
-                GUILD_scores_df.columns = ["name", "score"]
-                GUILD_scores_df = GUILD_scores_df.sort_values(by = "score", ascending= False)
-
-                ranking_method_df_not_seeds = GUILD_scores_df[~GUILD_scores_df['name'].isin(train_seeds_list)]
-                ranking_method = ranking_method_df_not_seeds["name"].values.tolist()
-               
-            else:
-                with open("Rankings/other_methods/" + METHOD + "/" + METHOD.lower() + "_output_" + DISEASE_NAME + ".txt", "r", encoding="utf-8") as rankingFile:
+                if METHOD in XAI_METHODS:
+                    with open("Rankings/" + DISEASE_CODES[DISEASE_NAME] + "_all_positives_new_ranking_" + METHOD.lower().replace("-", "_").replace(" ", "") + ".txt", "r", encoding="utf-8") as rankingFile:
                         for line in rankingFile:
                             ranking_method.append(line.strip("\n"))
-                
 
-            ranking_method = ranking_method[:round(ratio_to_validate)]
-            TP = 0
-            FP = 0
-            P = len(test_seeds) #TP+FP
-            #P = len(LP)
-            for gene in ranking_method:
+                elif METHOD in GUILD_METHODS:        
+                    GUILD_METHOD_PATH = "Rankings/other_methods/GUILD/" + METHOD + "/" + DISEASE_NAME + "_" + METHOD + ".txt"
+
+                    GUILD_scores_df = pd.read_csv(GUILD_METHOD_PATH, header = None, sep = "\t")
+                    GUILD_scores_df.columns = ["name", "score"]
+                    GUILD_scores_df = GUILD_scores_df.sort_values(by = "score", ascending= False)
+
+                    ranking_method_df_not_seeds = GUILD_scores_df[~GUILD_scores_df['name'].isin(train_seeds_list)]
+                    ranking_method = ranking_method_df_not_seeds["name"].values.tolist()
                 
-                if gene in test_seeds:
-                    TP += 1
-                    
                 else:
-                    FP += 1
+                    with open("Rankings/other_methods/" + METHOD + "/" + METHOD.lower() + "_output_" + DISEASE_NAME + ".txt", "r", encoding="utf-8") as rankingFile:
+                            for line in rankingFile:
+                                ranking_method.append(line.strip("\n"))
+                    
 
-            # P = TP+FP
-            # print(len(test_seeds))
-            # print(P)
-            # print("TP", TP)
-            # print("FP", FP)
-            recall = TP / P
-            precision = TP / (TP + FP)
-            
-            F1_score = 0
-            if (precision + recall) != 0:
-                F1_score = 2*(precision*recall)/(precision+recall)
+                ranking_method = ranking_method[:round(ratio_to_validate)]
+                TP = 0
+                FP = 0
+                P = len(test_seeds) #TP+FP
+                #P = len(LP)
+                for gene in ranking_method:
+                    
+                    if gene in test_seeds:
+                        TP += 1
+                        
+                    else:
+                        FP += 1
 
-            recall_folds_compare_methods[METHOD].append(recall)
-            precision_folds_compare_methods[METHOD].append(precision)
-            F1_folds_compare_methods[METHOD].append(F1_score)
+                # P = TP+FP
+                # print(len(test_seeds))
+                # print(P)
+                # print("TP", TP)
+                # print("FP", FP)
+                recall = TP / P
+                precision = TP / (TP + FP)
+                
+                F1_score = 0
+                if (precision + recall) != 0:
+                    F1_score = 2*(precision*recall)/(precision+recall)
+
+                recall_folds_compare_methods[METHOD].append(recall)
+                precision_folds_compare_methods[METHOD].append(precision)
+                F1_folds_compare_methods[METHOD].append(F1_score)
         
                     
 
@@ -222,7 +228,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         # sns.lineplot(x=ratios, y=recall_folds_compare_methods["XGDAG + LP"],label="XGDAG")
         # max_rec = max(recall_folds_compare_methods["XGDAG + LP"])
 
-        sns.lineplot(x=ratios, y=recall_folds,label="NIAPU")
+        # sns.lineplot(x=ratios, y=recall_folds,label="NIAPU")
         if max_rec < max(recall_folds):
             max_rec = max(recall_folds)
 
@@ -260,7 +266,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         #     sns.lineplot(x=ratios, y=precision_folds_compare_methods["XGDAG"],label="XGDAG")
         #     max_prec = max(precision_folds_compare_methods["XGDAG"])
 
-        sns.lineplot(x=ratios, y=precision_folds,label="NIAPU")
+        # sns.lineplot(x=ratios, y=precision_folds,label="NIAPU")
         
         if max_prec < max(precision_folds):
             max_prec = max(precision_folds)
@@ -300,7 +306,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         #     sns.lineplot(x=ratios, y=F1_folds_compare_methods["XGDAG"],label="XGDAG")
         #     max_F1 = max(F1_folds_compare_methods["XGDAG"])
 
-        sns.lineplot(x=ratios, y=F1_folds,label="NIAPU")
+        # sns.lineplot(x=ratios, y=F1_folds,label="NIAPU")
         
         if max_F1 < max(F1_folds):
             max_F1 = max(F1_folds)
