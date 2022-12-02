@@ -133,8 +133,8 @@ if __name__ == '__main__':
             if res == 'n':
                 print('[i] Skipping disease', disease_Id)
                 continue
-
-            ranking(disease_Id, METHOD, num_cpus, filename, modality)
+            else:
+                ranking(disease_Id, METHOD, num_cpus, filename, modality)
 
     t_end = perf_counter()
     print('[i] Elapsed time:', round(t_end - t_start, 3))
