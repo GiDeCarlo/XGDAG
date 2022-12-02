@@ -248,7 +248,7 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
         num_pos = len(nodes_with_idxs)
 
     # Get the subgraphs of every positive nodes
-    for node in tqdm(nodes_with_idxs[:num_pos]):
+    for node in tqdm(nodes_with_idxs):
         idx = nodes_with_idxs[node]
 
         subg_nodes, subg_edge_index, subg_mapping, subg_edge_mask = torch_geometric.utils.k_hop_subgraph(idx, 1, edge_index)
@@ -382,7 +382,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 
     # Get the subgraphs of every positive nodes
     
-    for node in tqdm(nodes_with_idxs[:num_pos]):
+    for node in tqdm(nodes_with_idxs):
         idx = nodes_with_idxs[node]
 
         subg_nodes, subg_edge_index, subg_mapping, subg_edge_mask = torch_geometric.utils.k_hop_subgraph(idx, 1, edge_index)
