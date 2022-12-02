@@ -113,9 +113,10 @@ if __name__ == '__main__':
     print('[i] Computing the ranking for', disease_Ids, '(', len(disease_Ids), ')', 'disease(s).')
     
     for disease_Id in disease_Ids:
-        print('[i] Starting', disease_Id)
 
         for METHOD in methods:
+            print('[i] Starting', disease_Id, 'with method', METHOD)
+            
             filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
 
             modality = 'multiclass'
