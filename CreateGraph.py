@@ -49,7 +49,7 @@ def create_graph_from_PPI(path_to_PPI, disease_id, graph_name, scale=False):
     print('\t[+]', len(list(G.edges)), 'edges')
 
     print('[+] Adding NeDBIT features...', end='')
-    nedbit_features = pd.read_csv(PATH_TO_DATASETS + disease_id + '_features.csv')
+    nedbit_features = pd.read_csv(PATH_TO_DATASETS + disease_id + '_features')
 
     degree      = dict(zip(nedbit_features['name'], nedbit_features['degree']))
     ring        = dict(zip(nedbit_features['name'], nedbit_features['ring']))

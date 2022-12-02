@@ -160,8 +160,8 @@ def predict_from_saved_model(model_name, data, classes, files_name='', plot_resu
 
             if save_to_file:
                 if norm == None:
-                    plt.savefig(image_path + '_notNorm.png')
+                    plt.savefig(image_path + '_notNorm.png', dpi=300)
                 else:
-                    plt.savefig(image_path + '_Norm.png')
+                    plt.savefig(image_path + '_Norm.png', dpi=300)
     
     return output, logits, loaded_model
