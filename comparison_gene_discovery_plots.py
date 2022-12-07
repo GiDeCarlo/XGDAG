@@ -1,16 +1,19 @@
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
+from sklearn.metrics import auc
+
 import sys
 
-DISEASE_NAMES = ["C0006142_Malignant_neoplasm_of_breast",  "C0009402_Colorectal_Carcinoma", "C0023893_Liver_Cirrhosis_Experimental","C0376358_Malignant_neoplasm_of_prostate","C0036341_Schizophrenia"] 
-''',"C0009402_Colorectal_Carcinoma",  
-    "C0036341_Schizophrenia", "C0001973_Alcoholic_Intoxication_Chronic", "C0011581_Depressive_disorder", "C0860207_Drug_Induced_Liver_Disease",
-                 "C3714756_Intellectual_Disability", "C0005586_Bipolar_Disorder"]'''
+DISEASE_NAMES_OLD = ["C0006142_Malignant_neoplasm_of_breast",  "C0009402_Colorectal_Carcinoma", "C0023893_Liver_Cirrhosis_Experimental","C0376358_Malignant_neoplasm_of_prostate","C0036341_Schizophrenia"]
+DISEASE_NAMES_NEW = ["C0001973_Alcoholic_Intoxication_Chronic", "C0011581_Depressive_disorder", "C0860207_Drug_Induced_Liver_Disease",
+                 "C3714756_Intellectual_Disability", "C0005586_Bipolar_Disorder"]
+DISEASE_NAMES =  DISEASE_NAMES_OLD + DISEASE_NAMES_NEW
 
 DISEASE_CODES = {"C0006142_Malignant_neoplasm_of_breast": "C0006142", "C0009402_Colorectal_Carcinoma": "C0009402", "C0023893_Liver_Cirrhosis_Experimental": "C0023893",
     "C0036341_Schizophrenia": "C0036341", "C0376358_Malignant_neoplasm_of_prostate": "C0376358", "C0001973_Alcoholic_Intoxication_Chronic": "C0001973", "C0011581_Depressive_disorder": "C0011581", 
@@ -23,16 +26,23 @@ GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRan
 # COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG"]
 # COMPARE_METHODS = ["DIAMOnD", "GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubgraphX", "XGDAG - SubgraphX", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
 COMPARE_METHODS = ["XGDAG - GNNExplainer",  "XGDAG - GraphSVX", "NIAPU", "DIAMOnD", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
-XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubgraphX", "XGDAG - SubgraphX",
-                "EdgeSHAPer", "XGDAG - EdgeSHAPer"]
-
-PLOT = True
+XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubgraphX", "XGDAG - SubgraphX"]
+                #"EdgeSHAPer", "XGDAG - EdgeSHAPer"]
+# COMPARE_METHODS = XAI_METHODS
+PLOT = False
 SAVE_METRICS = False
+
 SAVE_RANKING_GENES = False
 extended_validation = True
 # ratios_to_validate = [n/10 for n in range(1, 11)]
 ratios_to_validate = [25, 50, 100, 200, 500, 750, 1000, 1500, 2000, 2500, 3000]
 print(ratios_to_validate)
+
+auc_scores = {}
+for METHOD in COMPARE_METHODS:
+    auc_scores[METHOD] = []
+    
+
 for DISEASE_NAME in tqdm(DISEASE_NAMES):
     
     
@@ -43,7 +53,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
     recall_folds_compare_methods = {}
     precision_folds_compare_methods = {}
     F1_folds_compare_methods = {}
-
+    # recall_folds_compare_methods["NIAPU"] = []
+    # precision_folds_compare_methods["NIAPU"] = []
+    # F1_folds_compare_methods["NIAPU"] = []
     for METHOD in COMPARE_METHODS:
         recall_folds_compare_methods[METHOD] = []
         precision_folds_compare_methods[METHOD] = []
@@ -193,7 +205,12 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
                 precision_folds_compare_methods[METHOD].append(precision)
                 F1_folds_compare_methods[METHOD].append(F1_score)
         
-                    
+    #compute area under the precision-recall curve (AUC)
+    
+    
+    for METHOD in COMPARE_METHODS:
+        auc_score = auc(recall_folds_compare_methods[METHOD], precision_folds_compare_methods[METHOD])
+        auc_scores[METHOD].append(auc_score)
 
 
     if PLOT:
@@ -337,3 +354,7 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         plt.savefig("Plots/F1_" + DISEASE_NAME + ".png", dpi=300)
         plt.clf()
         plt.close('all')
+
+for METHOD in COMPARE_METHODS:
+    print("AUC for " + METHOD + ": " + str(np.mean(auc_scores[METHOD])))
+    print("Average F1 score for " + METHOD + ": " + str(np.mean(F1_folds_compare_methods[METHOD])))
