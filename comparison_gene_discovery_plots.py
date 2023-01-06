@@ -44,8 +44,6 @@ for METHOD in COMPARE_METHODS:
     
 
 for DISEASE_NAME in tqdm(DISEASE_NAMES):
-    
-    
     recall_folds = []
     precision_folds = []
     F1_folds = []
@@ -75,8 +73,6 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
     # F1_folds_compare_methods["GNNExplainer"] = []
 
     for ratio_to_validate in ratios_to_validate:
-        
-        
         GENE_APU_SCORES_PATH = "Rankings/other_methods/NIAPU/" + DISEASE_NAME + "/" + DISEASE_NAME + "_ranking"
         TRAIN_SEEDS_PATH = "Datasets_v2/" + DISEASE_CODES[DISEASE_NAME] + "_seed_genes.txt"
 
@@ -86,7 +82,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         APU_ranking_df = APU_scores_df.sort_values(by = "score", ascending= False)
         
 
-        train_seeds_df = pd.read_csv(TRAIN_SEEDS_PATH, header = None, sep = " ") #seed genes used for diffusion that we cosnider as P class in this scenario (20% or seed genes were removed to check for robustness)
+        # seed genes used for diffusion that we consider as P class in this scenario 
+        # (20% or seed genes were removed to check for robustness)
+        train_seeds_df = pd.read_csv(TRAIN_SEEDS_PATH, header = None, sep = " ")
         train_seeds_df.columns = ["name", "GDA Score"]
         train_seeds_list = train_seeds_df["name"].values.tolist()
 
@@ -110,9 +108,6 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         #N = len(train_seeds_list)
         ##@mastro this is the max number of genes that can be found by the aglorithm
         #N  = len(test_seeds)
-        
-        
-        
         
         APU_ranking_candidate_genes = APU_ranking_candidate_genes[:round(ratio_to_validate)]
         # LP = LP[:50]
