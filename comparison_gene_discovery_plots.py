@@ -28,8 +28,8 @@ GUILD_METHODS = ["fFlow", "NetScore", "NetZcore", "NetShort","NetCombo", "NetRan
 COMPARE_METHODS = ["XGDAG - GNNExplainer",  "XGDAG - GraphSVX", "NIAPU", "DIAMOnD", "MCL", "RWR", "fFlow", "NetCombo", "NetRank"]
 XAI_METHODS = ["GNNExplainer", "XGDAG - GNNExplainer", "GraphSVX", "XGDAG - GraphSVX", "SubgraphX", "XGDAG - SubgraphX"]
                 #"EdgeSHAPer", "XGDAG - EdgeSHAPer"]
-# COMPARE_METHODS = XAI_METHODS
-PLOT = False
+COMPARE_METHODS = XAI_METHODS
+PLOT = True
 SAVE_METRICS = False
 
 SAVE_RANKING_GENES = False
@@ -141,9 +141,9 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         precision_folds.append(precision)
         F1_folds.append(F1_score)
 
-        recall_folds_compare_methods["NIAPU"].append(recall)
-        precision_folds_compare_methods["NIAPU"].append(precision)
-        F1_folds_compare_methods["NIAPU"].append(F1_score)
+        # recall_folds_compare_methods["NIAPU"].append(recall)
+        # precision_folds_compare_methods["NIAPU"].append(precision)
+        # F1_folds_compare_methods["NIAPU"].append(F1_score)
         
 
         for METHOD in COMPARE_METHODS:
@@ -313,26 +313,27 @@ for DISEASE_NAME in tqdm(DISEASE_NAMES):
         ######F1 score###
         max_F1 = 0
         figure(figsize=(16, 10))
-        sns.set(font_scale=1.5)
+        # sns.set(font_scale=1.5, rc={'axes.facecolor':'white'})
+        sns.set_style("whitegrid")
         # if XGDAG:
         #     sns.lineplot(x=ratios, y=F1_folds_compare_methods["XGDAG"],label="XGDAG")
         #     max_F1 = max(F1_folds_compare_methods["XGDAG"])
 
         # sns.lineplot(x=ratios, y=F1_folds,label="NIAPU")
-        
+        markers = ["o", "X", "P", "v", "^", "<", ">", "8", "s", "p", "P", "*", "h", "H", "x", "|", "_"]
         if max_F1 < max(F1_folds):
             max_F1 = max(F1_folds)
 
         for METHOD in COMPARE_METHODS:
             
             if METHOD not in GUILD_METHODS:
-                sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label=METHOD)
+                sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label=METHOD, linewidth=2.5, marker=markers[COMPARE_METHODS.index(METHOD)])
                 
             else:
                 if METHOD != "NetRank":
-                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label= "GUILD-" + METHOD)
+                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label= "GUILD-" + METHOD,linewidth=2.5, marker=markers[COMPARE_METHODS.index(METHOD)])
                 else:
-                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="ToppGene")
+                    sns.lineplot(x=ratios, y=F1_folds_compare_methods[METHOD],label="ToppGene",linewidth=2.5, marker=markers[COMPARE_METHODS.index(METHOD)])
             if max_F1 < max(F1_folds_compare_methods[METHOD]):
                 max_F1 = max(F1_folds_compare_methods[METHOD])
         
