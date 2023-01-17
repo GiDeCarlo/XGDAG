@@ -141,6 +141,7 @@ if __name__ == '__main__':
                 print('[i] Skipping disease', disease_Id, 'with method', METHOD)
                 continue
             else:
+                # Compute the ranking
                 ranking(disease_Id, METHOD, num_cpus, filename, modality)
 
     t_end = perf_counter()
