@@ -1,17 +1,19 @@
 from GNNTrain import predict_from_saved_model
-from CreateDatasetv2 import get_dataset_from_graph
+from CreateDatasetv2_diamond import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
-import CreateDatasetv2_binary 
+import CreateDatasetv2_binary_diamond
 
 import os
 import sys
 from time import perf_counter
 
-disease_Ids = ['C0006142',  'C0009402', 'C0023893', \
-               'C0036341',  'C0376358', 'C3714756', \
-               'C0860207',  'C0011581', 'C0005586', \
-               'C0001973']
+# disease_Ids = ['C0006142',  'C0009402', 'C0023893', \
+#                'C0036341',  'C0376358', 'C3714756', \
+#                'C0860207',  'C0011581', 'C0005586', \
+#                'C0001973']
+
+disease_Ids = ['C0006142',  'C0009402', 'C0023893']
 
 methods = ['gnnexplainer',  'gnnexplainer_only',\
            'graphsvx',      'graphsvx_only',    \
@@ -48,14 +50,14 @@ def check_args(args):
 
 def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
 
-    model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
-    graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
+    model_name  = 'GraphSAGE_' + disease_Id + '_diamond'
+    graph_path  = PATH_TO_GRAPHS + 'grafo_diamond_nedbit_' + disease_Id + '.gml'
     classes     = ['P', 'LP', 'WN', 'LN', 'RN']
 
     if modality == 'binary':
         model_name += '_binary'
         classes = ['P', 'U']
-        dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+        dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
     else:
         dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False)
 
@@ -118,7 +120,7 @@ if __name__ == '__main__':
         for METHOD in methods:
             print('[i] Starting', disease_Id, 'with method', METHOD)
 
-            filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_new_ranking_'
+            filename = PATH_TO_RANKINGS + disease_Id + '_all_positives_diamond_'
 
             modality = 'multiclass'
             if '_only' in METHOD:
