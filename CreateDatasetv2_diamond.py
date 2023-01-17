@@ -76,12 +76,6 @@ def get_dataset_from_graph(path_to_graph, disease_id, verbose=True, quartile=Tru
     nedbit_scores = pd.read_csv('Datasets_v2/Diamond_dataset/' + disease_id + '_diamond_ranking', sep=' ', header=None, keep_default_na=False)
     nedbit_scores.columns = ["name", "out", "label"]
 
-    nedbit_scores['name'] = nedbit_scores['name'].str.replace("ORF",'orf')
-    nedbit_scores['name'] = nedbit_scores['name'].str.replace("Morf",'MORF')
-    nedbit_scores['name'] = nedbit_scores['name'].str.replace("^orf1$",'ORF1', regex=True)
-    nedbit_scores['name'] = nedbit_scores['name'].str.replace("SERF2_C15orf63",'SERF2_C15ORF63')
-    nedbit_scores['name'] = nedbit_scores['name'].str.replace("LOC100499484_C9orf174",'LOC100499484_C9ORF174')
-
     if not quartile:
       nedbit_scores["label"].replace(to_replace = 1, value = "P", inplace = True)
       nedbit_scores["label"].replace(to_replace = 2, value = "LP", inplace = True)
