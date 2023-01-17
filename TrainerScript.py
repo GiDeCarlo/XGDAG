@@ -32,7 +32,7 @@ def trainGNN(disease_Id, mode='binary'):
 if __name__ == '__main__':
 
     # disease_Ids = ['C3714756','C0860207','C0011581','C0005586','C0001973']
-    disease_Ids = ['C0006142','C0009402','C0023893']
+    disease_Ids = ['C0009402','C0023893']
 
     for disease_Id in disease_Ids:
         print('[+] Training', disease_Id)
