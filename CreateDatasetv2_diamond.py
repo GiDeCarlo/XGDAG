@@ -68,12 +68,12 @@ def get_dataset_from_graph(path_to_graph, disease_id, verbose=True, quartile=Tru
     if verbose: print('[+] Creating dataset...', end='')
     path_to_seed_genes = PATH_TO_DATASETS + 'Diamond_dataset/' + disease_id + '_seed_genes_scores_diamond.txt'
 
-    seed_genes          = pd.read_csv(path_to_seed_genes, header=None, sep=' ')
+    seed_genes          = pd.read_csv(path_to_seed_genes, header=None, sep=' ', keep_default_na=False)
     seed_genes.columns  = ["name", "GDA Score"]
     seeds_list          = seed_genes["name"].values.tolist()
 
   
-    nedbit_scores = pd.read_csv('Datasets_v2/Diamond_dataset/' + disease_id + '_diamond_ranking', sep=' ', header=None)
+    nedbit_scores = pd.read_csv('Datasets_v2/Diamond_dataset/' + disease_id + '_diamond_ranking', sep=' ', header=None, keep_default_na=False)
     nedbit_scores.columns = ["name", "out", "label"]
 
     nedbit_scores['name'] = nedbit_scores['name'].str.replace("ORF",'orf')
