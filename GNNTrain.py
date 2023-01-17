@@ -83,7 +83,7 @@ def train(model, data, epochs, lr, weight_decay, classes, model_name):
             'val loss: {:.4f},'.format(val_loss.item()),
             'val acc: {:.4f} '.format(val_acc.item()),
             '(best train acc: {:.4f},'.format(best_train_acc.item()),
-            'best val acc: {:.4f},'.format(best_val_acc.item()),
+            'best val acc: {:.4f},'.format(best_val_acc),
             'best train loss: {:.4f} '.format(best_train_lss),
             '@ epoch', best_loss_epoch ,')')
     
