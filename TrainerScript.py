@@ -8,7 +8,7 @@ import CreateDatasetv2_binary
 def trainGNN(disease_Id, mode='binary'):
     
     classes     = ['P', 'LP', 'WN', 'LN', 'RN']
-    model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
+    model_name  = 'GraphSAGE_' + disease_Id + '_diamond'
     graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
     dataset = None
@@ -32,8 +32,7 @@ def trainGNN(disease_Id, mode='binary'):
 if __name__ == '__main__':
 
     # disease_Ids = ['C3714756','C0860207','C0011581','C0005586','C0001973']
-
-    disease_Ids = ['C0005586','C0001973']
+    disease_Ids = ['C0006142','C0009402','C0023893']
 
     for disease_Id in disease_Ids:
         print('[+] Training', disease_Id)
