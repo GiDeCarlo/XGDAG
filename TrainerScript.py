@@ -9,7 +9,7 @@ def trainGNN(disease_Id, mode='binary'):
     
     classes     = ['P', 'LP', 'WN', 'LN', 'RN']
     model_name  = 'GraphSAGE_' + disease_Id + '_diamond'
-    graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
+    graph_path  = PATH_TO_GRAPHS + 'grafo_diamond_nedbit_' + disease_Id + '.gml'
 
     dataset = None
     G       = None
