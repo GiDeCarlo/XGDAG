@@ -38,3 +38,4 @@ if __name__ == '__main__':
         print('[+] Training', disease_Id)
         trainGNN(disease_Id, mode='binary')
         trainGNN(disease_Id, mode='multiclass')
+   
