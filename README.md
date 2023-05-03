@@ -30,8 +30,8 @@ To run XGDAG and additional explainers (SubgraphX, GraphSVX, and GNNExplainer):
  python ComputeRankingScript.py
 ```
 
-The gene rankings will be saved in the ```Rankings``` folder. The latter containts also rankings from additional methods (see paper).
+The script will use the explainers to explain the models for the diseases specified. The gene rankings will be saved in the ```Rankings``` folder. The latter containts also rankings from additional methods (see paper).
 
 # Explanation analyses and comparison
 
-Additionally, notebooks to reproduce the analyses shown in the paper are available (```comparison_plots.ipynb``` and ```comparison_plots_omim_disgenet.ipynb```). Those notebooks load precomputed explanations and generate plots.
+After having computed the rankings (or using the precompued ones available), it is possible to use the notebook ```comparison_plots.ipynb``` to generate plots like the ones provided in the paper.
