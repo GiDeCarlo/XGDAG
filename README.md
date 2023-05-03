@@ -4,4 +4,4 @@
  
 This is the official repository for XGDAG: eXplainable Gene–Disease Associations via Graph Neural Networks
 
-Checkout the [```xgdag```](https://github.com/GiDeCarlo/XGDAG/tree/main) branch for scrips and notebooks related to the paper.
+Checkout the [```main```](https://github.com/GiDeCarlo/XGDAG/tree/main) branch for scrips and notebooks related to the paper.
