@@ -12,6 +12,6 @@ We provide pretrained GraphSAGE models that can be used for the explanation phas
  python ComputeRankingScript.py
  ```
 
-Moreover, the module ```GNNTrain``` provides facilities to train a model on custom data. We provide the implementation of the GraphSAGE model employed in the paper in ```GraphSageModel.py```. However, any custom model can be trained and explained unsing the XGDAG framework.
+Moreover, the module ```GNNTrain``` provides facilities to train a model on custom data. We provide the implementation of the GraphSAGE model employed in the paper in ```GraphSageModel.py```. However, any custom model can be trained and explained using the XGDAG framework.
 
-Additionally, notebooks to reproduce the analysis shown in the paper are available (```comparison_plots.ipynb``` and ```comparison_plots_omim_disgenet.ipynb```). Those notebooks reaad the precomputed explanations and generate plots.
+Additionally, notebooks to reproduce the analyses shown in the paper are available (```comparison_plots.ipynb``` and ```comparison_plots_omim_disgenet.ipynb```). Those notebooks load precomputed explanations and generate plots.
