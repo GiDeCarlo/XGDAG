@@ -8,7 +8,7 @@ The repository contains scripts and notebook to run the code and reproduce the e
 
 # Data
 
-The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites. Part of the analysis relies on the set of all disease associations from DisGeNET. Given the size of this file, it needs to be manually dowloaded from [here]() and placed in the ```Datasets``` folder.
+The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites. Part of the analysis relies on the set of all disease associations from DisGeNET. Given the size of this file, it needs to be manually dowloaded from [here](https://drive.google.com/file/d/12cyI6ds0mKQI9mcRgaf0_9v8KDZHWpQR/view?usp=sharing) and placed in the ```Datasets``` folder.
 
 Using the aformentioned data we built graphs available for use in the ```Graphs``` folder. The script ```CreateGraph.py``` was used for this purpose.
 
