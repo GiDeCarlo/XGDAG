@@ -8,9 +8,15 @@ The repository contains scripts and notebook to run the code and reproduce the e
 
 # Data
 
-The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites. Part of the analysis relies on the set of all disease associations from DisGeNET. Given the size of this file, it needs to be manually dowloaded and placed in the ```Dataset``` folder.
+The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites. Part of the analysis relies on the set of all disease associations from DisGeNET. Given the size of this file, it needs to be manually dowloaded from [here]() and placed in the ```Datasets``` folder.
 
 Using the aformentioned data we built graphs available for use in the ```Graphs``` folder. The script ```CreateGraph.py``` was used for this purpose.
+
+# Requisites
+
+XGDAG relies on PyTorch 1.12 and PyTorch Geometric 2.1
+
+In the ```CondaEnvs``` folder we provided several Conda environment configurations compatible with XGDAG.
 
 # Train the model (optional)
 
