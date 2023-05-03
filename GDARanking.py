@@ -13,11 +13,11 @@ import torch
 import torch_geometric
 from torch_geometric.nn.models import GNNExplainer
 
-from src.explainers import GraphSVX
+from GraphSVX.src.explainers import GraphSVX
 # from src.data import prepare_data
 # from src.train import evaluate, test
 
-import SubgraphX
+from SubgraphX import SubgraphX
 
 #reproducibility
 SEED = 42
