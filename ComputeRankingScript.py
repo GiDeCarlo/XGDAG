@@ -1,5 +1,5 @@
 from GNNTrain import predict_from_saved_model
-from CreateDatasetv2_diamond import get_dataset_from_graph
+from CreateDatasetv2 import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
 import CreateDatasetv2_binary_diamond
@@ -59,7 +59,7 @@ def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
         classes = ['P', 'U']
         dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
     else:
-        dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+        dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=True)
 
     model_name += '_40000_0_0005'
 

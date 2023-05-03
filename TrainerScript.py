@@ -1,5 +1,5 @@
 from GNNTrain import train, predict_from_saved_model
-from CreateDatasetv2_diamond import get_dataset_from_graph
+from CreateDatasetv2 import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import get_ranking, predict_candidate_genes, validate_with_extended_dataset, get_ranking_no_LP_intersection, validate_with_extended_dataset_no_LP
 from GraphSageModel import GNN7L_Sage
@@ -19,7 +19,7 @@ def trainGNN(disease_Id, mode='binary'):
         model_name += '_binary'
         dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
     else:
-        dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+        dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=True)
 
     lr              = 0.001
     epochs          = 40000
