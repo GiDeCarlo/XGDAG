@@ -32,7 +32,11 @@ To run XGDAG and additional explainers (SubgraphX, GraphSVX, and GNNExplainer):
 
 The script will use the explainers to explain the models for the diseases specified. The gene rankings will be saved in the ```Rankings``` folder. The latter containts also rankings from additional methods (see paper).
 
-# Explanation analyses and comparison
+# Analyses and comparison
 
-After having computed the rankings (or using the precompued ones available), it is possible to use the notebook ```comparison_plots.ipynb``` to generate plots like the ones provided in the paper.
+After having computed the rankings (or using the precompued ones available), it is possible to use the provided notebooks to analyze the results and generate plots like the ones shown in the paper. The notebooks ```comparison_plots_disgenet.ipynb``` and ```comparison_plots_omim.ipynb``` analyze the results on DisGeNET and OMIM+PheI datasets, respectively. Finally, ```comparison_plots_omim_vs_disgenet.ipynb``` provides a comparison of the results on both datasets.
+
+## Contacts
+
+For any further question, do not hesitate to drop an email [here](mailto:decarlo@diag.uniroma1.it) or [here](mailto:mastropietro@diag.uniroma1.it).
 
