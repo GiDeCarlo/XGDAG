@@ -8,19 +8,19 @@ The repository contains scripts and notebook to run the code and reproduce the e
 
 # Data
 
-The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites. Part of the analysis relies on the set of all disease associations from DisGeNET. Given the size of this file, it needs to be manually dowloaded from [here](https://drive.google.com/file/d/12cyI6ds0mKQI9mcRgaf0_9v8KDZHWpQR/view?usp=sharing) and placed in the ```Datasets``` folder.
+The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites. Part of the analysis relies on the set of all disease associations from DisGeNET. Given the size of this file, it needs to be manually downloaded from [here](https://drive.google.com/file/d/12cyI6ds0mKQI9mcRgaf0_9v8KDZHWpQR/view?usp=sharing) and placed in the ```Datasets``` folder.
 
 Using the aformentioned data we built graphs available for use in the ```Graphs``` folder. The script ```CreateGraph.py``` was used for this purpose.
 
-# Requisites
+# Prerequisites
 
 XGDAG relies on PyTorch 1.12 and PyTorch Geometric 2.1.
 
-In the ```CondaEnvs``` folder we provided several Conda environment configurations compatible with XGDAG.
+In the ```CondaEnvs``` folder we provide several Conda environment configurations compatible with XGDAG.
 
 # Train the model (optional)
 
-We already provide pretrained models for the diseases analized in the paper in the ```Models``` folder. However, it is possible to train a custom GraphSAGE model by running:
+Pretrained models for the diseases analized in the paper are available in the ```Models``` folder. However, it is possible to train a custom GraphSAGE model by running:
 
 ```bash
  python TrainerScript.py
@@ -36,11 +36,11 @@ To run XGDAG and additional explainers (SubgraphX, GraphSVX, and GNNExplainer):
  python ComputeRankingScript.py
 ```
 
-The script will use the explainers to explain the models for the diseases specified. The gene rankings will be saved in the ```Rankings``` folder. The latter containts also rankings from additional methods (see paper).
+The script will use the explainers to explain the models for the specified diseases. Gene rankings will be saved in the ```Rankings``` folder. The latter containts also rankings from additional methods (see paper) used for comparison.
 
-# Analyses and comparison
+# Analysis and comparison
 
-After having computed the rankings (or using the precompued ones available), it is possible to use the provided notebooks to analyze the results and generate plots like the ones shown in the paper. The notebooks ```comparison_plots_disgenet.ipynb``` and ```comparison_plots_omim.ipynb``` analyze the results on DisGeNET and OMIM+PheI datasets, respectively. Finally, ```comparison_plots_omim_vs_disgenet.ipynb``` provides a comparison of the results on both datasets.
+After having computed the rankings (or using the precompued ones), it is possible to use the provided notebooks to analyze the results and generate plots like the ones shown in the paper. The notebooks ```comparison_plots_disgenet.ipynb``` and ```comparison_plots_omim.ipynb``` analyze the results on DisGeNET and OMIM+PheI datasets, respectively. Finally, ```comparison_plots_omim_vs_disgenet.ipynb``` provides a comparison of the results on both datasets.
 
 ## Contacts
 
