@@ -2,16 +2,36 @@
 
 # XGDAG
  
-This is the official repository for XGDAG: eXplainable Gene-Disease Associations via Graph Neural Networks
+This is the official repository for **XGDAG: eXplainable Gene-Disease Associations via Graph Neural Networks**.
 
 The repository contains scripts and notebook to run the code and reproduce the experiments in the paper.
 
-We provide pretrained GraphSAGE models that can be used for the explanation phase. In order to use such models and explain using XGDAG and additional XAI methods, simply run:
+# Data
 
- ```bash
+The data generated and provided in this repository are based on PPI data from [BioGRID](https://thebiogrid.org/) and Gene-Disease Associations from [DisGeNET](https://www.disgenet.org/). The original data can be dowloaded from the related websites.
+
+Using the aformentioned data we built graphs available for use in the ```Graphs``` folder. The script ```CreateGraph.py``` was used for this purpose.
+
+# Train the model (optional)
+
+We already provide pretrained models for the diseases analized in the paper in the ```Models``` folder. However, it is possible to train a custom GraphSAGE model by running:
+
+```bash
+ python TrainerScript.py
+```
+
+The module contains parameters that can be adjusted at will.
+
+# Explanation phase
+
+To run XGDAG and additional explainers (SubgraphX, GraphSVX, and GNNExplainer):
+
+```bash
  python ComputeRankingScript.py
- ```
+```
 
-Moreover, the module ```GNNTrain``` provides facilities to train a model on custom data. We provide the implementation of the GraphSAGE model employed in the paper in ```GraphSageModel.py```. However, any custom model can be trained and explained using the XGDAG framework.
+The gene rankings will be saved in the ```Rankings``` folder. The latter containts also rankings from additional methods (see paper).
+
+# Explanation analyses and comparison
 
 Additionally, notebooks to reproduce the analyses shown in the paper are available (```comparison_plots.ipynb``` and ```comparison_plots_omim_disgenet.ipynb```). Those notebooks load precomputed explanations and generate plots.
