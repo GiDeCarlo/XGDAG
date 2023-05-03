@@ -14,7 +14,7 @@ Using the aformentioned data we built graphs available for use in the ```Graphs`
 
 # Requisites
 
-XGDAG relies on PyTorch 1.12 and PyTorch Geometric 2.1
+XGDAG relies on PyTorch 1.12 and PyTorch Geometric 2.1.
 
 In the ```CondaEnvs``` folder we provided several Conda environment configurations compatible with XGDAG.
 
