@@ -73,7 +73,7 @@ def get_dataset_from_graph(path_to_graph, disease_id, verbose=True, quartile=Tru
     seeds_list          = seed_genes["name"].values.tolist()
 
   
-    nedbit_scores = pd.read_csv('Datasets_v2/Diamond_dataset/' + disease_id + '_diamond_ranking', sep=' ', header=None, keep_default_na=False)
+    nedbit_scores = pd.read_csv(PATH_TO_DATASETS + 'Diamond_dataset/' + disease_id + '_diamond_ranking', sep=' ', header=None, keep_default_na=False)
     nedbit_scores.columns = ["name", "out", "label"]
 
 
