@@ -1,0 +1,172 @@
+PPI
+Order: 19761
+Size: 678932
+Average degree: 68.714
+Is regular: False
+Is connected: True
+Components: 1
+Cycles: 659172
+Is tree: False
+Is planar: False
+Diameter: 7
+Clustering coefficient: 0.11514935421331564
+
+PPI+GDA
+Disease: C0860207
+	Number of associated genese: 320
+	Components: 1
+	Order: 9907
+	Size: 34772
+	Average degree: 7.02
+	Is regular: False
+	Is connected: True
+	Cycles: 24866
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.11675607158546127
+	Density: 0.0007086294218036747
+	Average shortest path length: 3.483242407977881
+Disease: C0005586
+	Number of associated genese: 451
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 12160
+	Size: 42841
+	Average degree: 7.046
+	Is regular: False
+	Is connected: True
+	Cycles: 30682
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.12715295692136572
+	Density: 0.000579506300293047
+	Average shortest path length: 3.332333248384346
+Disease: C3714756
+	Number of associated genese: 431
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 11079
+	Size: 46761
+	Average degree: 8.441
+	Is regular: False
+	Is connected: True
+	Cycles: 35683
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.11077378150873521
+	Density: 0.0007619945455328528
+	Average shortest path length: 3.488192865103565
+Disease: C0001973
+	Number of associated genese: 255
+	Components: 3
+	The following statistics regard only the LCC
+	Order: 8889
+	Size: 20609
+	Average degree: 4.637
+	Is regular: False
+	Is connected: True
+	Cycles: 11721
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.14663193315599207
+	Density: 0.000521710962861389
+	Average shortest path length: 3.453272453468769
+Disease: C0376358
+	Number of associated genese: 606
+	Components: 1
+	Order: 14187
+	Size: 85308
+	Average degree: 12.026
+	Is regular: False
+	Is connected: True
+	Cycles: 71122
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.17957688738876743
+	Density: 0.0008477527977168988
+	Average shortest path length: 3.1175615835892674
+Disease: C0011581
+	Number of associated genese: 279
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 10625
+	Size: 27993
+	Average degree: 5.269
+	Is regular: False
+	Is connected: True
+	Cycles: 17369
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.09238855095397326
+	Density: 0.0004959780297661233
+	Average shortest path length: 3.424791920623671
+Disease: C0023893
+	Number of associated genese: 747
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 13327
+	Size: 63366
+	Average degree: 9.509
+	Is regular: False
+	Is connected: True
+	Cycles: 50040
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.09256664983203272
+	Density: 0.0007135987522934267
+	Average shortest path length: 3.3858734294557586
+Disease: C0006142
+	Number of associated genese: 1025
+	Components: 4
+	The following statistics regard only the LCC
+	Order: 15012
+	Size: 115606
+	Average degree: 15.402
+	Is regular: False
+	Is connected: True
+	Cycles: 100595
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.15217149715136702
+	Density: 0.0010260350332307157
+	Average shortest path length: 3.1446130995188306
+Disease: C0009402
+	Number of associated genese: 672
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 13373
+	Size: 65482
+	Average degree: 9.793
+	Is regular: False
+	Is connected: True
+	Cycles: 52110
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.13146701085896953
+	Density: 0.0007323635457025073
+	Average shortest path length: 3.2770144253093534
+Disease: C0036341
+	Number of associated genese: 832
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 13654
+	Size: 75909
+	Average degree: 11.119
+	Is regular: False
+	Is connected: True
+	Cycles: 62256
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.1366436634989007
+	Density: 0.0008143953347181563
+	Average shortest path length: 3.294209066501292
