@@ -10,55 +10,14 @@ Is tree: False
 Is planar: False
 Diameter: 7
 Clustering coefficient: 0.11514935421331564
+Radius: 4
+Density: 0.0034774461699904956
+Average shortest path length: 2.8044735244061267
+Average betweenness centrality: 9.132413201103923e-05
+Average closeness centrality: 0.3605729671064562
+Average eigenvector centrality: 0.0032408355750297322
 
 PPI+GDA
-Disease: C0860207
-	Number of associated genese: 320
-	Components: 1
-	Order: 9907
-	Size: 34772
-	Average degree: 7.02
-	Is regular: False
-	Is connected: True
-	Cycles: 24866
-	Is tree: False
-	Is planar: False
-	Diameter: 7
-	Clustering coefficient: 0.11675607158546127
-	Density: 0.0007086294218036747
-	Average shortest path length: 3.483242407977881
-Disease: C0005586
-	Number of associated genese: 451
-	Components: 2
-	The following statistics regard only the LCC
-	Order: 12160
-	Size: 42841
-	Average degree: 7.046
-	Is regular: False
-	Is connected: True
-	Cycles: 30682
-	Is tree: False
-	Is planar: False
-	Diameter: 8
-	Clustering coefficient: 0.12715295692136572
-	Density: 0.000579506300293047
-	Average shortest path length: 3.332333248384346
-Disease: C3714756
-	Number of associated genese: 431
-	Components: 2
-	The following statistics regard only the LCC
-	Order: 11079
-	Size: 46761
-	Average degree: 8.441
-	Is regular: False
-	Is connected: True
-	Cycles: 35683
-	Is tree: False
-	Is planar: False
-	Diameter: 7
-	Clustering coefficient: 0.11077378150873521
-	Density: 0.0007619945455328528
-	Average shortest path length: 3.488192865103565
 Disease: C0001973
 	Number of associated genese: 255
 	Components: 3
@@ -75,53 +34,30 @@ Disease: C0001973
 	Clustering coefficient: 0.14663193315599207
 	Density: 0.000521710962861389
 	Average shortest path length: 3.453272453468769
-Disease: C0376358
-	Number of associated genese: 606
-	Components: 1
-	Order: 14187
-	Size: 85308
-	Average degree: 12.026
-	Is regular: False
-	Is connected: True
-	Cycles: 71122
-	Is tree: False
-	Is planar: False
-	Diameter: 7
-	Clustering coefficient: 0.17957688738876743
-	Density: 0.0008477527977168988
-	Average shortest path length: 3.1175615835892674
-Disease: C0011581
-	Number of associated genese: 279
+	Radius: 4
+	Average betweenness centrality: 0.0002760518120252928
+	Average closeness centrality: 0.294454295441265
+	Average eigenvector centrality: 0.0052193623244135585
+Disease: C0005586
+	Number of associated genese: 451
 	Components: 2
 	The following statistics regard only the LCC
-	Order: 10625
-	Size: 27993
-	Average degree: 5.269
+	Order: 12160
+	Size: 42841
+	Average degree: 7.046
 	Is regular: False
 	Is connected: True
-	Cycles: 17369
+	Cycles: 30682
 	Is tree: False
 	Is planar: False
 	Diameter: 8
-	Clustering coefficient: 0.09238855095397326
-	Density: 0.0004959780297661233
-	Average shortest path length: 3.424791920623671
-Disease: C0023893
-	Number of associated genese: 747
-	Components: 2
-	The following statistics regard only the LCC
-	Order: 13327
-	Size: 63366
-	Average degree: 9.509
-	Is regular: False
-	Is connected: True
-	Cycles: 50040
-	Is tree: False
-	Is planar: False
-	Diameter: 8
-	Clustering coefficient: 0.09256664983203272
-	Density: 0.0007135987522934267
-	Average shortest path length: 3.3858734294557586
+	Clustering coefficient: 0.12715295692136572
+	Density: 0.000579506300293047
+	Average shortest path length: 3.332333248384346
+	Radius: 4
+	Average betweenness centrality: 0.00019183527293833815
+	Average closeness centrality: 0.30434149646968867
+	Average eigenvector centrality: 0.004489557397476126
 Disease: C0006142
 	Number of associated genese: 1025
 	Components: 4
@@ -138,6 +74,10 @@ Disease: C0006142
 	Clustering coefficient: 0.15217149715136702
 	Density: 0.0010260350332307157
 	Average shortest path length: 3.1446130995188306
+	Radius: 4
+	Average betweenness centrality: 0.000142878953998589
+	Average closeness centrality: 0.3223861178159929
+	Average eigenvector centrality: 0.0036065396584645066
 Disease: C0009402
 	Number of associated genese: 672
 	Components: 2
@@ -154,6 +94,50 @@ Disease: C0009402
 	Clustering coefficient: 0.13146701085896953
 	Density: 0.0007323635457025073
 	Average shortest path length: 3.2770144253093534
+	Radius: 4
+	Average betweenness centrality: 0.0001702949985273617
+	Average closeness centrality: 0.30972813719950165
+	Average eigenvector centrality: 0.004047471044663959
+Disease: C0011581
+	Number of associated genese: 279
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 10625
+	Size: 27993
+	Average degree: 5.269
+	Is regular: False
+	Is connected: True
+	Cycles: 17369
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.09238855095397326
+	Density: 0.0004959780297661233
+	Average shortest path length: 3.424791920623671
+	Radius: 4
+	Average betweenness centrality: 0.00022825867651545488
+	Average closeness centrality: 0.29589503812780327
+	Average eigenvector centrality: 0.004911703158536974
+Disease: C0023893
+	Number of associated genese: 747
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 13327
+	Size: 63366
+	Average degree: 9.509
+	Is regular: False
+	Is connected: True
+	Cycles: 50040
+	Is tree: False
+	Is planar: False
+	Diameter: 8
+	Clustering coefficient: 0.09256664983203272
+	Density: 0.0007135987522934267
+	Average shortest path length: 3.3858734294557586
+	Radius: 4
+	Average betweenness centrality: 0.00017905241496853712
+	Average closeness centrality: 0.29895987303182986
+	Average eigenvector centrality: 0.004093757260391444
 Disease: C0036341
 	Number of associated genese: 832
 	Components: 2
@@ -170,3 +154,65 @@ Disease: C0036341
 	Clustering coefficient: 0.1366436634989007
 	Density: 0.0008143953347181563
 	Average shortest path length: 3.294209066501292
+	Radius: 4
+	Average betweenness centrality: 0.00016804930167750427
+	Average closeness centrality: 0.30800940822635986
+	Average eigenvector centrality: 0.003966306567908883
+Disease: C0376358
+	Number of associated genese: 606
+	Components: 1
+	Order: 14187
+	Size: 85308
+	Average degree: 12.026
+	Is regular: False
+	Is connected: True
+	Cycles: 71122
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.17957688738876743
+	Density: 0.0008477527977168988
+	Average shortest path length: 3.1175615835892674
+	Radius: 4
+	Average betweenness centrality: 0.0001492817471687882
+	Average closeness centrality: 0.32532589684255453
+	Average eigenvector centrality: 0.0038812141570114824
+Disease: C0860207
+	Number of associated genese: 320
+	Components: 1
+	Order: 9907
+	Size: 34772
+	Average degree: 7.02
+	Is regular: False
+	Is connected: True
+	Cycles: 24866
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.11675607158546127
+	Density: 0.0007086294218036747
+	Average shortest path length: 3.483242407977881
+	Radius: 4
+	Average betweenness centrality: 0.0002507059472971124
+	Average closeness centrality: 0.29030727821788493
+	Average eigenvector centrality: 0.004662921158200669
+Disease: C3714756
+	Number of associated genese: 431
+	Components: 2
+	The following statistics regard only the LCC
+	Order: 11079
+	Size: 46761
+	Average degree: 8.441
+	Is regular: False
+	Is connected: True
+	Cycles: 35683
+	Is tree: False
+	Is planar: False
+	Diameter: 7
+	Clustering coefficient: 0.11077378150873521
+	Density: 0.0007619945455328528
+	Average shortest path length: 3.488192865103565
+	Radius: 4
+	Average betweenness centrality: 0.00022462696263460927
+	Average closeness centrality: 0.28996071131258405
+	Average eigenvector centrality: 0.004117198026445404
