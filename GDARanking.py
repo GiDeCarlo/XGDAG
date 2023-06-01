@@ -25,7 +25,7 @@ from GraphSVX.src.explainers import GraphSVX
 # from src.data import prepare_data
 # from src.train import evaluate, test
 
-from SubgraphX import SubgraphX
+from SubgraphX.SubgraphX import SubgraphX
 
 #reproducibility
 SEED = 42

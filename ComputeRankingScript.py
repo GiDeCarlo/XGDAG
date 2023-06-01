@@ -2,7 +2,7 @@ from GNNTrain import predict_from_saved_model
 from CreateDatasetv2 import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
-import CreateDatasetv2_binary_diamond
+import CreateDatasetv2_binary_diamond, CreateDatasetv2_binary
 
 import os
 import sys
@@ -48,23 +48,24 @@ def check_args(args):
 				print('\n[ERR]', num_cpus,'is an invalid number of cores\n')
 				return -1
 		
-		elif dataset != 'DisGeNET' or dataset != 'OMIM':
+		elif dataset.lower() != 'disgenet' and dataset.lower() != 'omin':
 			print('\n[ERR]', dataset,'is an invalid dataset name\n')
+			return -1
 		
 		return disease_Id, METHOD, num_cpus, dataset
 
 def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
 
-		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings_40000_0_0005'
+		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
 		graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 		classes     = ['P', 'LP', 'WN', 'LN', 'RN']
-
+		from_diamond = False
 		if modality == 'binary':
 				model_name += '_binary'
 				classes = ['P', 'U']
-				dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+				dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
 		else:
-				dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=True)
+				dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=from_diamond)
 
 		model_name += '_40000_0_0005'
 
