@@ -18,7 +18,7 @@ from torch_geometric.utils.num_nodes import maybe_num_nodes
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.datasets import MoleculeNet
 from torch_geometric.utils import remove_self_loops
-from SubgraphXshapley import GnnNetsGC2valueFunc, GnnNetsNC2valueFunc, \
+from .SubgraphXshapley import GnnNetsGC2valueFunc, GnnNetsNC2valueFunc, \
     gnn_score, mc_shapley, l_shapley, mc_l_shapley, NC_mc_l_shapley, sparsity
 
 

@@ -54,14 +54,15 @@ def check_args(args):
 				print('\n[ERR]', num_cpus,'is an invalid number of cores\n')
 				return -1
 		
-		elif dataset not in datasets and dataset != 'all':
+		elif dataset != 'DisGeNET' or dataset != 'OMIM':
 			print('\n[ERR]', dataset,'is an invalid dataset name\n')
 			return -1
 		
 		return disease_Id, METHOD, num_cpus, dataset
 
 def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
-		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings'
+
+		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings_40000_0_0005'
 		graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 		classes     = ['P', 'LP', 'WN', 'LN', 'RN']
 		from_diamond = False
