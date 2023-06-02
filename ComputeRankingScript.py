@@ -60,42 +60,49 @@ def check_args(args):
 		
 		return disease_Id, METHOD, num_cpus, dataset
 
-def ranking(disease_Id, METHOD, num_cpus, filename, modality='multiclass'):
-
-		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings_40000_0_0005'
+def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclass'):
+	if dataset == 'disgenet':
+		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings_'
 		graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
-		classes     = ['P', 'LP', 'WN', 'LN', 'RN']
-		from_diamond = False
-		if modality == 'binary':
-				model_name += '_binary'
-				classes = ['P', 'U']
+	else: # omim
+		model_name = 'GraphSAGE_' + disease_Id + '_diamond_'
+		graph_path  = PATH_TO_GRAPHS + 'grafo_diamond_nedbit_' + disease_Id + '.gml'
+	
+	classes     = ['P', 'LP', 'WN', 'LN', 'RN']
+
+	if modality == 'binary':
+			model_name += '_binary'
+			classes = ['P', 'U']
+			if dataset == 'disgenet':
 				dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
-		else:
-				dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=from_diamond)
+			else:
+				dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+	else:
+			dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=(dataset=='omim'))
 
-		model_name += '_40000_0_0005'
+	model_name += '_40000_0_0005'
 
-		preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False)
+	preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False)
 
-		ranking = predict_candidate_genes(model,
-																		dataset,
-																		preds,
-																		explainability_method=METHOD,
-																		disease_Id=disease_Id,
-																		explanation_nodes_ratio=1,
-																		masks_for_seed=10,
-																		num_hops=1,
-																		G=G,
-																		num_pos="all",
-																		num_workers=num_cpus)
+	ranking = predict_candidate_genes(model,
+																	dataset,
+																	preds,
+																	explainability_method=METHOD,
+																	disease_Id=disease_Id,
+																	explanation_nodes_ratio=1,
+																	masks_for_seed=10,
+																	num_hops=1,
+																	G=G,
+																	num_pos="all",
+																	num_workers=num_cpus)
 
-		# print('[+] Saving ranking to file', filename, end='...')
+	# print('[+] Saving ranking to file', filename, end='...')
 
-		with open(filename, 'w') as f:
-				for line in ranking:
-						f.write(line + '\n')
+	with open(filename, 'w') as f:
+			for line in ranking:
+					f.write(line + '\n')
 
-		print('ok')
+	print('ok')
 
 def sanitized_input(prompt, accepted_values):
 		res = input(prompt).strip().lower()
@@ -160,7 +167,7 @@ if __name__ == '__main__':
 									continue
 							else:
 									# Compute the ranking
-									ranking(disease, METHOD, num_cpus, filename, modality)
+									ranking(disease, METHOD, num_cpus, filename, dataset, modality)
 
 		t_end = perf_counter()
 		print('[i] Elapsed time:', round(t_end - t_start, 3))
