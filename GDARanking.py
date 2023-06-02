@@ -159,7 +159,7 @@ def predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_I
 
 		# Get explanations of all the positive genes
 		nodes_explained = 0
-		for node in tqdm(nodes_with_idxs):
+		for node in tqdm(nodes_with_idxs, desc='XGDAG+GNNExplainer'):
 				idx = nodes_with_idxs[node]
 
 				candidates[node] = {}
@@ -260,7 +260,7 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 				num_pos = len(nodes_with_idxs)
 
 		# Get the subgraphs of every positive nodes
-		for node in tqdm(nodes_with_idxs):
+		for node in nodes_with_idxs:
 				idx = nodes_with_idxs[node]
 
 				subg_nodes, subg_edge_index, subg_mapping, subg_edge_mask = torch_geometric.utils.k_hop_subgraph(idx, 1, edge_index)
@@ -269,7 +269,7 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 		
 		nodes_explained = 0
 		# Get explanations of all the positive genes
-		for node in tqdm(nodes_with_idxs):
+		for node in tqdm(nodes_with_idxs, desc='GNNExplainer'):
 				idx = nodes_with_idxs[node]
 
 				candidates[node] = {}
@@ -393,8 +393,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 				num_pos = len(nodes_with_idxs)
 
 		# Get the subgraphs of every positive nodes
-		
-		for node in tqdm(nodes_with_idxs):
+		for node in nodes_with_idxs:
 				idx = nodes_with_idxs[node]
 
 				subg_nodes, subg_edge_index, subg_mapping, subg_edge_mask = torch_geometric.utils.k_hop_subgraph(idx, 1, edge_index)
@@ -403,8 +402,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 
 		# Get explanations of all the positive genes
 		nodes_explained = 0
-		for node in tqdm(nodes_with_idxs):
-
+		for node in tqdm(nodes_with_idxs, desc='XGDAG+GraphSVX'):
 				idx = nodes_with_idxs[node]
 
 				candidates[node] = {}
@@ -525,7 +523,6 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 				num_pos = len(nodes_with_idxs)
 
 		# Get the subgraphs of every positive nodes
-		
 		for node in nodes_with_idxs:
 				idx = nodes_with_idxs[node]
 
@@ -535,7 +532,7 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 
 		# Get explanations of all the positive genes
 		nodes_explained = 0
-		for node in tqdm(nodes_with_idxs):
+		for node in tqdm(nodes_with_idxs, desc='GraphSVX'):
 
 				idx = nodes_with_idxs[node]
 
@@ -718,7 +715,6 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
 		return sorted_ranking
 
 #legacy methods
-
 def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positive=20, explanation_nodes_ratio=1, masks_for_seed=10, G=None):
 
 		# Predicted P(ositive) genes in the test mask
