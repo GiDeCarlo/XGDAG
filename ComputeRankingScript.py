@@ -82,7 +82,7 @@ def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclas
 
 	model_name += '40000_0_0005'
 
-	preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False)
+	preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False, plot_results=False)
 
 	ranking = predict_candidate_genes(model,
 																	dataset,
