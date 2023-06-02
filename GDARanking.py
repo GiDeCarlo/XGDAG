@@ -41,7 +41,7 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
 														explanation_nodes_ratio=1, masks_for_seed=10, num_hops=1,
 														G=None, num_pos="all", threshold=False, num_workers=1):
 		
-		print('[i] Device:', device)
+		#print('[i] Device:', device)
 
 		if explainability_method.lower() == "gnnexplainer":
 				return predict_candidate_genes_gnn_explainer(model,
@@ -112,7 +112,7 @@ def predict_candidate_genes(model, dataset, predictions, disease_Id, explainabil
 		# elif explainability_method.lower() == "edgeshaper":
 		#     return predict_candidate_genes_edgeshaper(model, dataset, predictions, disease_Id, explanation_nodes_ratio, masks_for_seed,num_hops, G)
 		else:
-				print("Invalid explainability method || not implemented.")
+				#print("Invalid explainability method || not implemented.")
 				return None
 
 def isCandidable(lbl, pred):
@@ -134,9 +134,9 @@ def predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_I
 		# Take all positive genes
 		graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 		if G == None:
-				print('[+] Reading graph...', end='')
+				#print('[+] Reading graph...', end='')
 				G = nx.read_gml(graph_path)
-				print('ok')
+				#print('ok')
 		
 		i = 0
 		for node in G:
@@ -144,7 +144,7 @@ def predict_candidate_genes_gnn_explainer(model, dataset, predictions, disease_I
 						nodes_with_idxs[node] = i
 				i += 1
 		
-		print('[+]', len(nodes_with_idxs), 'P nodes predictes as P')
+		#print('[+]', len(nodes_with_idxs), 'P nodes predictes as P')
 
 		if num_pos == "all":
 				num_pos = len(nodes_with_idxs)
@@ -244,9 +244,9 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 		# Take all positive genes
 		graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 		if G == None:
-				print('[+] Reading graph...', end='')
+				#print('[+] Reading graph...', end='')
 				G = nx.read_gml(graph_path)
-				print('ok')
+				#print('ok')
 		
 		i = 0
 		for node in G:
@@ -254,7 +254,7 @@ def predict_candidate_genes_gnn_explainer_only(model, dataset, predictions, dise
 						nodes_with_idxs[node] = i
 				i += 1
 		
-		print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
+		#print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
 
 		if num_pos == "all":
 				num_pos = len(nodes_with_idxs)
@@ -377,9 +377,9 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 		# Take all positive genes
 		graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 		if G == None:
-				print('[+] Reading graph...', end='')
+				#print('[+] Reading graph...', end='')
 				G = nx.read_gml(graph_path)
-				print('ok')
+				#print('ok')
 		
 		i = 0
 		for node in G:
@@ -387,7 +387,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 						nodes_with_idxs[node] = i
 				i += 1
 		
-		print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
+		#print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
 
 		if num_pos == "all":
 				num_pos = len(nodes_with_idxs)
@@ -436,7 +436,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 						nodes_and_scores_candidates = nodes_and_explanations
 
 				num_nodes = int(round(subg_numnodes_d[idx][0]*explanation_nodes_ratio))
-				print(subg_numnodes_d[idx][0])
+				#print(subg_numnodes_d[idx][0])
 				important_nodes = list(nodes_and_scores_candidates.keys())
 
 				seen_genes = set()
@@ -460,7 +460,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 						# when the seen geens set reaches the num_nodes threshold
 						# break the loop
 						if len(seen_genes) >= num_nodes:
-								print('break')
+								#print('break')
 								break
 				
 				nodes_explained += 1
@@ -480,7 +480,7 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 		return sorted_ranking
 
 def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_Id, explanation_nodes_ratio=1, num_hops=1, G=None, num_pos="all", threshold = True):
-		print(num_pos)
+		#print(num_pos)
 		#graphsvx params
 		num_samples = 100 #number of coaliton used to apporx shapley values
 		info =  False
@@ -509,9 +509,9 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 		# Take all positive genes
 		graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 		if G == None:
-				print('[+] Reading graph...', end='')
+				#print('[+] Reading graph...', end='')
 				G = nx.read_gml(graph_path)
-				print('ok')
+				#print('ok')
 		
 		i = 0
 		for node in G:
@@ -519,7 +519,7 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 						nodes_with_idxs[node] = i
 				i += 1
 		
-		print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
+		#print('[+]', len(nodes_with_idxs), 'positive nodes found in the graph')
 
 		if num_pos == "all":
 				num_pos = len(nodes_with_idxs)
@@ -566,7 +566,7 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 						nodes_and_scores_candidates = nodes_and_explanations
 
 				num_nodes = int(round(subg_numnodes_d[idx][0]*explanation_nodes_ratio))
-				print(subg_numnodes_d[idx][0])
+				#print(subg_numnodes_d[idx][0])
 				important_nodes = list(nodes_and_scores_candidates.keys())
 
 				seen_genes = set()
@@ -591,7 +591,7 @@ def predict_candidate_genes_graphsvx_only(model, dataset, predictions, disease_I
 						# break the loop
 
 						if len(seen_genes) >= num_nodes:
-								print('break')
+								#print('break')
 								break
 				
 				nodes_explained += 1
@@ -624,7 +624,7 @@ def run_explanation(args):
 
 		pid = multiprocessing.current_process().pid
 
-		print('[', pid, '] New worker created. Explaining node', node)
+		#print('[', pid, '] New worker created. Explaining node', node)
 
 		nodes_list = list(G.nodes)
 		idx = nodes_list.index(node)
@@ -666,7 +666,7 @@ def run_explanation(args):
 						if isCandidable(labels[coalition_node_idx], pred): # if node is LP
 								candidates[node][coalition_node_name] = score
 		
-		print('[', pid, '] Worker on node', node, 'done')
+		#print('[', pid, '] Worker on node', node, 'done')
 
 		return candidates
 
@@ -676,15 +676,15 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
 
 		host_cpu_count = multiprocessing.cpu_count()
 		if num_workers > host_cpu_count:
-				print('\t[i] Passed', num_workers, 'as num_cores, but is seems that you have only', host_cpu_count,\
-						'to avoid errors, num_cores is set to', host_cpu_count)
+				#print('\t[i] Passed', num_workers, 'as num_cores, but is seems that you have only', host_cpu_count,\
+				#		'to avoid errors, num_cores is set to', host_cpu_count)
 				num_workers = host_cpu_count
 		
-		print('[i] Using', num_workers, 'cores')
+		#print('[i] Using', num_workers, 'cores')
 
 		max_degree = 20
 
-		print('[i] Filtering seed genes with more than', max_degree, 'degree to reduce computational time of SubgraphX.')
+		#print('[i] Filtering seed genes with more than', max_degree, 'degree to reduce computational time of SubgraphX.')
 
 		parameters_l = []
 		# Get positive nodes
@@ -693,7 +693,7 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, explanation_n
 				if labels[i] == 0 and predictions[i] == 0 and G.degree[node] < max_degree: # Degree filter
 						parameters_l.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x, num_classes, labels])
 		
-		print('[i]', len(parameters_l), 'seed genes selected.')
+		#print('[i]', len(parameters_l), 'seed genes selected.')
 		
 		if device == 'cuda':
 				multiprocessing.set_start_method('spawn', force=True)
@@ -751,9 +751,9 @@ def get_ranking(model, dataset, predictions, probabilities, disease_Id, n_positi
 		graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
 		if G == None:
-				print('[+] Reading graph...', end='')
+				#print('[+] Reading graph...', end='')
 				G = nx.read_gml(graph_path)
-				print('ok')
+				#print('ok')
 
 		i = 0
 		for node in G.nodes:
@@ -887,9 +887,9 @@ def get_ranking_no_LP_intersection(model, dataset, predictions, probabilities, d
 		graph_path = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 
 		if G == None:
-				print('[+] Reading graph...', end='')
+				#print('[+] Reading graph...', end='')
 				G = nx.read_gml(graph_path)
-				print('ok')
+				#print('ok')
 
 		i = 0
 		for node in G.nodes:
