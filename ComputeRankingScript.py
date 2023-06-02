@@ -54,7 +54,7 @@ def check_args(args):
 				print('\n[ERR]', num_cpus,'is an invalid number of cores\n')
 				return -1
 		
-		elif dataset != 'DisGeNET' or dataset != 'OMIM':
+		elif dataset not in datasets and dataset != 'all':
 			print('\n[ERR]', dataset,'is an invalid dataset name\n')
 			return -1
 		
