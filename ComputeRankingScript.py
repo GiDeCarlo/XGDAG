@@ -71,7 +71,7 @@ def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclas
 	classes     = ['P', 'LP', 'WN', 'LN', 'RN']
 
 	if modality == 'binary':
-			model_name += '_binary'
+			model_name += 'binary_'
 			classes = ['P', 'U']
 			if dataset == 'disgenet':
 				dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False, verbose=False)
