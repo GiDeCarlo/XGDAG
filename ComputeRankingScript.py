@@ -74,13 +74,13 @@ def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclas
 			model_name += '_binary'
 			classes = ['P', 'U']
 			if dataset == 'disgenet':
-				dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+				dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False, verbose=False)
 			else:
-				dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False)
+				dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False, verbose=False)
 	else:
-			dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=(dataset=='omim'))
+			dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=(dataset=='omim'), verbose=False)
 
-	model_name += '_40000_0_0005'
+	model_name += '40000_0_0005'
 
 	preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False)
 
