@@ -6,7 +6,6 @@ import CreateDatasetv2_binary_diamond, CreateDatasetv2_binary
 
 import os
 import sys
-from tqdm import tqdm
 import multiprocessing
 from time import perf_counter
 
@@ -137,6 +136,9 @@ if __name__ == '__main__':
 	METHOD			= args[1]
 	num_cpus		= args[2]
 	dataset			= args[3]
+
+	# Comment if not using GPU
+	multiprocessing.set_start_method('spawn', force=True)
 
 	# Check if the number of cpus selected by the user is greater than the
 	# number of cores of the machine, if so, set num_cpus to the maximum number
