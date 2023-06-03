@@ -139,10 +139,10 @@ class GraphSVX():
             # M: total number of features + neighbours considered for node v
             if regu==1 or D==0: 
                 D=0
-                print('Explainations only consider node features')
+                # print('Explainations only consider node features')
             if regu==0 or self.F==0:
                 self.F=0
-                print('Explainations only consider graph structure')
+                # print('Explainations only consider graph structure')
             self.M = self.F+D
 
             # Def range of endcases considered

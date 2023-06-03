@@ -383,7 +383,6 @@ def predict_candidate_genes_graphsvx(model, dataset, predictions, disease_Id, ex
 	labels      = dataset.y.to('cpu')
 	edge_index  = dataset.edge_index.to('cpu')
 	
-
 	ranking         = {}
 	candidates      = {}
 	nodes_with_idxs = {}
