@@ -7,6 +7,7 @@ import CreateDatasetv2_binary_diamond, CreateDatasetv2_binary
 import os
 import sys
 from tqdm import tqdm
+import multiprocessing
 from time import perf_counter
 
 disgenet_disease_Ids = ['C0006142',  'C0009402', 'C0023893', \
@@ -23,45 +24,57 @@ methods = ['gnnexplainer',  'gnnexplainer_only',\
 datasets = ['disgenet', 'omim']
 
 def check_args(args):
-		if len(args) < 3:
-				if len(args) == 2 and (args[1] == '-h' or args[1] == '--help'):
-						print('\n\n[Usage]: python ComputeRankingScript.py disease_id method num_cores dataset\n')
-						print('- Available disease_id:\n', disgenet_disease_Ids, '\nType all to compute the ranking for all the available diseases\n')
-						print('- Available methods:\n', methods, '\nType all to compute the ranking for all the available methods\n')
-						print('- num_cores: type the number of cores to use to parallelize the explainability phase\n')
-						print('- Available datasets:', datasets, '\nType all to run experiments and both the datasets\nWhen omim dataset is selected, only', omim_disease_Ids, 'disease_ids are available\n')
-						print('=== Example runs ===')
-						print('Ex1: python ComputeRankingScript.py C0006142 gnnexplainer 1 disgenet')
-						print('Ex2: python ComputeRankingScript.py all all 1 all\n')
-				else:
-						print('\n\n[ERR] Wrong input parameters: use -h or --help to print the usage\n\n')
-				return -1
-
-		disease_Id = args[1]
-		METHOD = args[2]
-		num_cpus = int(args[3])
-		dataset = args[4].lower()
-
-		if disease_Id not in disgenet_disease_Ids and disease_Id.lower() != 'all':
-				print('\n[ERR] Disease ID', disease_Id, 'not present in the database\n')
-				return -1
-
-		elif METHOD not in methods and METHOD.lower() != 'all':
-				print('\n[ERR] Method', METHOD, 'not available\n')
-				return -1
-		
-		elif num_cpus < 1:
-				print('\n[ERR]', num_cpus,'is an invalid number of cores\n')
-				return -1
-		
-		elif dataset not in datasets and dataset != 'all':
-			print('\n[ERR]', dataset,'is an invalid dataset name\n')
+	if len(args) < 3:
+			if len(args) == 2 and (args[1] == '-h' or args[1] == '--help'):
+					print('\n\n[Usage]: python ComputeRankingScript.py disease_id method num_cores dataset\n')
+					print('- Available disease_id:\n', disgenet_disease_Ids, '\nType all to compute the ranking for all the available diseases\n')
+					print('- Available methods:\n', methods, '\nType all to compute the ranking for all the available methods\n')
+					print('- num_cores: type the number of cores to use to parallelize the explainability phase\n')
+					print('- Available datasets:', datasets, '\nType all to run experiments and both the datasets\nWhen omim dataset is selected, only', omim_disease_Ids, 'disease_ids are available\n')
+					print('=== Example runs ===')
+					print('Ex1: python ComputeRankingScript.py C0006142 gnnexplainer 1 disgenet')
+					print('Ex2: python ComputeRankingScript.py all all 1 all\n')
+			else:
+					print('\n\n[ERR] Wrong input parameters: use -h or --help to print the usage\n\n')
 			return -1
-		
-		return disease_Id, METHOD, num_cpus, dataset
 
-def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclass'):
-	if dataset == 'disgenet':
+	disease_Id = args[1]
+	METHOD = args[2]
+	num_cpus = int(args[3])
+	dataset = args[4].lower()
+
+	if disease_Id not in disgenet_disease_Ids and disease_Id.lower() != 'all':
+			print('\n[ERR] Disease ID', disease_Id, 'not present in the database\n')
+			return -1
+
+	elif METHOD not in methods and METHOD.lower() != 'all':
+			print('\n[ERR] Method', METHOD, 'not available\n')
+			return -1
+	
+	elif num_cpus < 1:
+			print('\n[ERR]', num_cpus,'is an invalid number of cores\n')
+			return -1
+	
+	elif dataset not in datasets and dataset != 'all':
+		print('\n[ERR]', dataset,'is an invalid dataset name\n')
+		return -1
+	
+	return disease_Id, METHOD, num_cpus, dataset
+
+def ranking(args):
+
+	disease_Id		= args[0]
+	METHOD				= args[1]
+	num_cpus			= args[2]
+	filename			= args[3]
+	dataset_name	= args[4]
+	modality			= args[5]
+
+	print('[+] Process', os.getpid(), 'STARTED. Configuration:', disease_Id, METHOD, dataset_name)
+
+	start_time = perf_counter()
+
+	if dataset_name == 'disgenet':
 		model_name  = 'GraphSAGE_' + disease_Id + '_new_rankings_'
 		graph_path  = PATH_TO_GRAPHS + 'grafo_nedbit_' + disease_Id + '.gml'
 	else: # omim
@@ -73,12 +86,12 @@ def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclas
 	if modality == 'binary':
 			model_name += 'binary_'
 			classes = ['P', 'U']
-			if dataset == 'disgenet':
+			if dataset_name == 'disgenet':
 				dataset, G = CreateDatasetv2_binary.get_dataset_from_graph(graph_path, disease_Id, quartile=False, verbose=False)
 			else:
 				dataset, G = CreateDatasetv2_binary_diamond.get_dataset_from_graph(graph_path, disease_Id, quartile=False, verbose=False)
 	else:
-			dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=(dataset=='omim'), verbose=False)
+			dataset, G = get_dataset_from_graph(graph_path, disease_Id, quartile=False, from_diamond=(dataset_name=='omim'), verbose=False)
 
 	model_name += '40000_0_0005'
 
@@ -102,7 +115,9 @@ def ranking(disease_Id, METHOD, num_cpus, filename, dataset, modality='multiclas
 			for line in ranking:
 					f.write(line + '\n')
 
-	print('ok')
+	end_time = round(perf_counter()-start_time, 3)
+
+	print('[+] Process', os.getpid(), 'FINISHED. Configuration:', disease_Id, METHOD, dataset_name,' - ', end_time, 'seconds')
 
 def sanitized_input(prompt, accepted_values):
 		res = input(prompt).strip().lower()
@@ -111,63 +126,81 @@ def sanitized_input(prompt, accepted_values):
 		return res
 
 if __name__ == '__main__':
-		t_start = perf_counter()
+	t_start = perf_counter()
 
-		args = check_args(sys.argv)
+	args = check_args(sys.argv)
 
-		if args == -1:
-				sys.exit()
-		
-		disease_Id	= args[0]
-		METHOD			= args[1]
-		num_cpus		= args[2]
-		dataset			= args[3]
+	if args == -1:
+			sys.exit()
+	
+	disease_Id	= args[0]
+	METHOD			= args[1]
+	num_cpus		= args[2]
+	dataset			= args[3]
 
-		# if disease_Id != 'all':
-		# 		disease_Ids = [disease_Id]
-		
-		if METHOD != 'all':
-				methods = [METHOD]
+	# Check if the number of cpus selected by the user is greater than the
+	# number of cores of the machine, if so, set num_cpus to the maximum number
+	# possible
+	host_cpu_count = multiprocessing.cpu_count()
+	if num_cpus > host_cpu_count:
+			print('\t[i] Passed', num_cpus, 'as num_cores, but is seems that you have only', host_cpu_count,\
+					'to avoid errors, num_cores is set to', host_cpu_count)
+			num_cpus = host_cpu_count
 
-		if dataset != 'all':
-			datasets = [dataset]
-		
-		if disease_Id != 'all' and dataset != 'digenet' and (disease_Id not in omim_disease_Ids):
-			print('[ERR] Disease', disease_Id, 'is not available for the OMIM dataset.\nPlease check the help page for the list of available diseases for the different datasets\n')
-			sys.exit(-1)
+	# if disease_Id != 'all':
+	# 		disease_Ids = [disease_Id]
+	
+	if METHOD != 'all':
+			methods = [METHOD]
 
-		for dataset in tqdm(datasets, desc='dataset'):
-			diseases = [disease_Id]
-			if disease_Id == 'all':
-				diseases = disgenet_disease_Ids if dataset == 'disgenet' else omim_disease_Ids
-			# print('\n[i] Computing the ranking for', diseases, '(', len(diseases), ')', 'disease(s) on dataset', dataset)
+	if dataset != 'all':
+		datasets = [dataset]
+	
+	if disease_Id != 'all' and dataset != 'digenet' and (disease_Id not in omim_disease_Ids):
+		print('[ERR] Disease', disease_Id, 'is not available for the OMIM dataset.\nPlease check the help page for the list of available diseases for the different datasets\n')
+		sys.exit(-1)
 
-			for disease in tqdm(diseases, desc='disease'):
-					for METHOD in tqdm(methods, desc='method'):
-							# print('\t[+] Starting', disease, 'with method', METHOD, 'on dataset', dataset)
+	# Create a list to store the parameters that will
+	# be mapped to the different processes
+	params = []
 
-							filename = PATH_TO_RANKINGS + disease + '_Phat_and_P_' + dataset + '_'
+	for dataset in datasets:
+		diseases = [disease_Id]
 
-							modality = 'multiclass'
-							if '_only' in METHOD:
-									modality = 'binary'
-							
-							if modality == 'multiclass':
-									filename += 'xgdag_' + METHOD.lower() + '.txt'
-							else:
-									filename += METHOD.lower().replace("_only", "") + '.txt'
+		if disease_Id == 'all':
+			diseases = disgenet_disease_Ids if dataset == 'disgenet' else omim_disease_Ids
+		# print('\n[i] Computing the ranking for', diseases, '(', len(diseases), ')', 'disease(s) on dataset', dataset)
 
-							res = ''
-							if os.path.exists(filename):
-									res = sanitized_input('[+] A raking for disease ' + disease + \
-											' has already been computed with ' + METHOD + \
-											'. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
-							if res == 'n':
-									print('[i] Skipping disease', disease, 'with method', METHOD)
-									continue
-							else:
-									# Compute the ranking
-									ranking(disease, METHOD, num_cpus, filename, dataset, modality)
+		for disease in diseases:
+			for METHOD in methods:
+				# print('\t[+] Starting', disease, 'with method', METHOD, 'on dataset', dataset)
+				filename = PATH_TO_RANKINGS + disease + '_Phat_and_P_' + dataset + '_'
 
-		t_end = perf_counter()
-		print('[i] Elapsed time:', round(t_end - t_start, 3))
+				modality = 'multiclass'
+				if '_only' in METHOD:
+						modality = 'binary'
+				
+				if modality == 'multiclass':
+						filename += 'xgdag_' + METHOD.lower() + '.txt'
+				else:
+						filename += METHOD.lower().replace("_only", "") + '.txt'
+
+				res = ''
+				if os.path.exists(filename):
+						res = sanitized_input('[+] A raking for disease ' + disease + \
+								' has already been computed with ' + METHOD + \
+								'. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
+				if res == 'n':
+						print('[i] Skipping disease', disease, 'with method', METHOD)
+						continue
+				else:
+						# Compute the ranking
+						# ranking(disease, METHOD, num_cpus, filename, dataset, modality)
+						params.append([disease, METHOD, num_cpus, filename, dataset, modality])
+	
+	with multiprocessing.Pool(num_cpus) as pool:
+		# Map the function to the parameters in parallel
+		pool.map(ranking, params)
+
+	t_end = perf_counter()
+	print('[i] Elapsed time:', round(t_end - t_start, 3))
