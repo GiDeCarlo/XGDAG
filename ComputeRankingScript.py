@@ -180,29 +180,29 @@ if __name__ == '__main__':
 
 				modality = 'multiclass'
 				if '_only' in METHOD:
-						modality = 'binary'
+					modality = 'binary'
 				
 				if modality == 'multiclass':
-						filename += 'xgdag_' + METHOD.lower() + '.txt'
+					filename += 'xgdag_' + METHOD.lower() + '.txt'
 				else:
-						filename += METHOD.lower().replace("_only", "") + '.txt'
+					filename += METHOD.lower().replace("_only", "") + '.txt'
 
 				res = ''
 				if os.path.exists(filename):
-						res = sanitized_input('[+] A raking for disease ' + disease + \
-								' has already been computed with ' + METHOD + \
-								'. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
-				if res == 'n':
-						print('[i] Skipping disease', disease, 'with method', METHOD)
-						continue
+					print('[i] Skipping disease', disease, 'with method', METHOD)
+					continue
+				# 	res = sanitized_input('[+] A raking for disease ' + disease + \
+				# 			' has already been computed with ' + METHOD + \
+				# 			'. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
+				# if res == 'n':
 				else:
-						# Compute the ranking
-						# ranking(disease, METHOD, num_cpus, filename, dataset, modality)
-						params.append([disease, METHOD, num_cpus, filename, dataset, modality])
+					# Compute the ranking
+					ranking(disease, METHOD, num_cpus, filename, dataset, modality)
+					# params.append([disease, METHOD, num_cpus, filename, dataset, modality])
 	
-	with multiprocessing.Pool(num_cpus) as pool:
-		# Map the function to the parameters in parallel
-		pool.map(ranking, params)
+	# with multiprocessing.Pool(num_cpus) as pool:
+	# 	# Map the function to the parameters in parallel
+	# 	pool.map(ranking, params)
 
 	t_end = perf_counter()
 	print('[i] Elapsed time:', round(t_end - t_start, 3))
