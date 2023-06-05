@@ -197,8 +197,9 @@ if __name__ == '__main__':
 				# if res == 'n':
 				else:
 					# Compute the ranking
-					ranking(disease, METHOD, num_cpus, filename, dataset, modality)
-					# params.append([disease, METHOD, num_cpus, filename, dataset, modality])
+					args = [disease, METHOD, num_cpus, filename, dataset, modality]
+					ranking(args)
+					# params.append(args)
 	
 	# with multiprocessing.Pool(num_cpus) as pool:
 	# 	# Map the function to the parameters in parallel
