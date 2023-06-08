@@ -6,8 +6,10 @@ import CreateDatasetv2_binary_diamond, CreateDatasetv2_binary
 
 import os
 import sys
+import numpy as np
 import multiprocessing
 from time import perf_counter
+from sklearn.metrics import classification_report
 
 disgenet_disease_Ids = ['C0006142',  'C0009402', 'C0023893', \
 							 'C0036341',  'C0376358', 'C3714756', \
@@ -16,11 +18,11 @@ disgenet_disease_Ids = ['C0006142',  'C0009402', 'C0023893', \
 
 omim_disease_Ids = ['C0006142',  'C0009402', 'C0023893']
 
-methods = ['gnnexplainer',  'gnnexplainer_only',\
-					 'graphsvx',      'graphsvx_only',    \
-					 'subgraphx',     'subgraphx_only']
+available_methods = ['gnnexplainer', 'gnnexplainer_only',\
+					 						'graphsvx', 'graphsvx_only',    \
+					 						'subgraphx', 'subgraphx_only']
 
-datasets = ['disgenet', 'omim']
+available_datasets = ['disgenet', 'omim']
 
 def check_args(args):
 	if len(args) < 3:
@@ -37,39 +39,49 @@ def check_args(args):
 					print('\n\n[ERR] Wrong input parameters: use -h or --help to print the usage\n\n')
 			return -1
 
-	disease_Id = args[1]
-	METHOD = args[2]
+	diseases = args[1].split(',')
+	methods = args[2].split(',')
 	num_cpus = int(args[3])
 	dataset = args[4].lower()
-
-	if disease_Id not in disgenet_disease_Ids and disease_Id.lower() != 'all':
-			print('\n[ERR] Disease ID', disease_Id, 'not present in the database\n')
-			return -1
-
-	elif METHOD not in methods and METHOD.lower() != 'all':
-			print('\n[ERR] Method', METHOD, 'not available\n')
-			return -1
 	
-	elif num_cpus < 1:
+	if diseases[0] != 'all':
+		for disease in diseases:
+			if disease not in disgenet_disease_Ids:
+				print('\n[ERR] Disease ID', disease, 'not present in the database\n')
+				return -1
+
+	if methods[0] != 'all':
+		for method in methods:
+			if method not in available_methods:
+				print('\n[ERR] Method', method, 'not available\n')
+				return -1
+	
+	if num_cpus < 1:
 			print('\n[ERR]', num_cpus,'is an invalid number of cores\n')
 			return -1
 	
-	elif dataset not in datasets and dataset != 'all':
+	if dataset not in available_datasets and dataset != 'all':
 		print('\n[ERR]', dataset,'is an invalid dataset name\n')
 		return -1
 	
-	return disease_Id, METHOD, num_cpus, dataset
+	if dataset == 'omim':
+		for disease in diseases:
+			if disease not in omim_disease_Ids:
+				print('\n[ERR]', disease,' not available for dataset', dataset, '\n')
+				return -1
+	
+	return diseases, methods, num_cpus, dataset
 
 def ranking(args):
 
 	disease_Id		= args[0]
-	METHOD				= args[1]
+	method				= args[1]
 	num_cpus			= args[2]
 	filename			= args[3]
 	dataset_name	= args[4]
 	modality			= args[5]
 
-	print('[+] Process', os.getpid(), 'STARTED. Configuration:', disease_Id, METHOD, dataset_name)
+	print('[+] Process', os.getpid(), 'STARTED. Configuration:', disease_Id, method, dataset_name)
 
 	start_time = perf_counter()
 
@@ -96,10 +108,29 @@ def ranking(args):
 
 	preds, probs, model = predict_from_saved_model(model_name, dataset, classes, save_to_file=False, plot_results=False)
 
+	print(classification_report(dataset.y.to('cpu'), preds.to('cpu')))
+	
+	print('count 0 in labels', (dataset.y.cpu().numpy() == 0).sum())
+	print('count 0 in preds', (preds.cpu().numpy() == 0).sum())
+  
+  # Count the number of elements that are equal to the specific value
+	count = np.count_nonzero((dataset.y.cpu().numpy() == 0) & (preds.cpu().numpy() == 0))
+	print("P elements predicted as P:", count)
+
+	print('count 1 in labels', (dataset.y.cpu().numpy() == 1).sum())
+	print('count 1 in preds', (preds.cpu().numpy() == 1).sum())
+  
+  # Find the common elements between the two arrays
+	count = np.count_nonzero((dataset.y.cpu().numpy() == 1) & (preds.cpu().numpy() == 1))
+	print("LP (or U) elements predicted as LP (or U):", count)
+  
+	count = np.count_nonzero((dataset.y.cpu().numpy() == 1) & (preds.cpu().numpy() == 0))
+	print("LP (or U) elements predicted as P:", count)
+
 	ranking = predict_candidate_genes(model,
 																	dataset,
 																	preds,
-																	explainability_method=METHOD,
+																	explainability_method=method,
 																	disease_Id=disease_Id,
 																	explanation_nodes_ratio=1,
 																	masks_for_seed=10,
@@ -116,7 +147,7 @@ def ranking(args):
 
 	end_time = round(perf_counter()-start_time, 3)
 
-	print('[+] Process', os.getpid(), 'FINISHED. Configuration:', disease_Id, METHOD, dataset_name,' - ', end_time, 'seconds')
+	print('[+] Process', os.getpid(), 'FINISHED. Configuration:', disease_Id, method, dataset_name,' - ', end_time, 'seconds')
 
 def sanitized_input(prompt, accepted_values):
 		res = input(prompt).strip().lower()
@@ -130,15 +161,15 @@ if __name__ == '__main__':
 	args = check_args(sys.argv)
 
 	if args == -1:
-			sys.exit()
+			sys.exit(-1)
 	
 	disease_Id	= args[0]
-	METHOD			= args[1]
+	methods			= args[1]
 	num_cpus		= args[2]
-	dataset			= args[3]
+	datasets		= args[3]
 
 	# Comment if not using GPU
-	multiprocessing.set_start_method('spawn', force=True)
+	# multiprocessing.set_start_method('spawn', force=True)
 
 	# Check if the number of cpus selected by the user is greater than the
 	# number of cores of the machine, if so, set num_cpus to the maximum number
@@ -152,52 +183,50 @@ if __name__ == '__main__':
 	# if disease_Id != 'all':
 	# 		disease_Ids = [disease_Id]
 	
-	if METHOD != 'all':
-			methods = [METHOD]
+	if methods[0] == 'all':
+		methods = available_methods
 
-	if dataset != 'all':
-		datasets = [dataset]
-	
-	if disease_Id != 'all' and dataset != 'digenet' and (disease_Id not in omim_disease_Ids):
-		print('[ERR] Disease', disease_Id, 'is not available for the OMIM dataset.\nPlease check the help page for the list of available diseases for the different datasets\n')
-		sys.exit(-1)
+	if datasets != 'all':
+		datasets = [datasets]
+	else:
+		datasets = available_datasets
 
 	# Create a list to store the parameters that will
 	# be mapped to the different processes
 	params = []
 
 	for dataset in datasets:
-		diseases = [disease_Id]
+		diseases = disease_Id
 
-		if disease_Id == 'all':
+		if disease_Id[0] == 'all':
 			diseases = disgenet_disease_Ids if dataset == 'disgenet' else omim_disease_Ids
 		# print('\n[i] Computing the ranking for', diseases, '(', len(diseases), ')', 'disease(s) on dataset', dataset)
 
 		for disease in diseases:
-			for METHOD in methods:
+			for method in methods:
 				# print('\t[+] Starting', disease, 'with method', METHOD, 'on dataset', dataset)
 				filename = PATH_TO_RANKINGS + disease + '_Phat_and_P_' + dataset + '_'
 
 				modality = 'multiclass'
-				if '_only' in METHOD:
-					modality = 'binary'
+				if '_only' in method:
+						modality = 'binary'
 				
 				if modality == 'multiclass':
-					filename += 'xgdag_' + METHOD.lower() + '.txt'
+						filename += 'xgdag_' + method.lower() + '.txt'
 				else:
-					filename += METHOD.lower().replace("_only", "") + '.txt'
+						filename += method.lower().replace("_only", "") + '.txt'
 
 				res = ''
 				if os.path.exists(filename):
-					print('[i] Skipping disease', disease, 'with method', METHOD)
+					print('[i] Skipping disease', disease, 'with method', method)
 					continue
-				# 	res = sanitized_input('[+] A raking for disease ' + disease + \
-				# 			' has already been computed with ' + METHOD + \
-				# 			'. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
+				# 		res = sanitized_input('[+] A raking for disease ' + disease + \
+				# 				' has already been computed with ' + METHOD + \
+				# 				'. Do you want to overwrite the old ranking? (y|n) ', ['y', 'n'])
 				# if res == 'n':
 				else:
-					# Compute the ranking
-					args = [disease, METHOD, num_cpus, filename, dataset, modality]
+						# Compute the ranking
+					args = [disease, method, num_cpus, filename, dataset, modality]
 					ranking(args)
 					# params.append(args)
 	

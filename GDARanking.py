@@ -22,12 +22,13 @@ import multiprocessing
 import torch
 import torch_geometric
 from torch_geometric.nn.models import GNNExplainer
+from tqdm.contrib.concurrent import process_map
 
 from GraphSVX.src.explainers import GraphSVX
 # from src.data import prepare_data
 # from src.train import evaluate, test
 
-from SubgraphX.SubgraphX import SubgraphX
+from SubgraphX.SubgraphX import SubgraphX, k_hop_subgraph_with_default_whole_graph, find_closest_node_result_fixed_nodes
 
 #reproducibility
 SEED = 42
@@ -36,7 +37,7 @@ np.random.seed(SEED)
 random.seed(SEED)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
+# device = 'cpu'
 ### New methods
 ### Wrapper function
 def predict_candidate_genes(model, dataset, predictions, disease_Id, explainability_method,
@@ -644,6 +645,7 @@ def run_explanation(args):
 	x = args[7]
 	num_classes = args[8]
 	labels = args[9]
+	current_device = args[10] #
 
 	start_time = time.time()
 
@@ -654,15 +656,27 @@ def run_explanation(args):
 	candidates = {}
 	candidates[node] = {}
 	# get candidates for node
-	explainer = SubgraphX.SubgraphX(model,
+	# explainer = SubgraphX.SubgraphX(model,
+	# 								num_classes=num_classes,
+	# 								device=device,
+	# 								num_hops=num_hops,
+	# 								min_atoms=2,
+	# 								explain_graph=False,
+	# 								reward_method='nc_mc_l_shapley')
+	explainer = SubgraphX(model,
 									num_classes=num_classes,
-									device=device,
+									device=current_device,
 									num_hops=num_hops,
 									min_atoms=2,
 									explain_graph=False,
 									reward_method='nc_mc_l_shapley')
 	
-	original_mapping, _, _, _ = SubgraphX.k_hop_subgraph_with_default_whole_graph(
+	# original_mapping, _, _, _ = SubgraphX.k_hop_subgraph_with_default_whole_graph(
+	# 				edge_index=edge_index,
+	# 				node_idx=idx,
+	# 				num_hops=1,
+	# 		)
+	original_mapping, _, _, _ = k_hop_subgraph_with_default_whole_graph(
 					edge_index=edge_index,
 					node_idx=idx,
 					num_hops=1,
@@ -672,7 +686,8 @@ def run_explanation(args):
 
 	_, explanation_results, _ = explainer(x, edge_index, node_idx=idx, max_nodes=max_nodes)
 
-	best_coalition = SubgraphX.find_closest_node_result_fixed_nodes(explanation_results[prediction], max_nodes=max_nodes)
+	# best_coalition = SubgraphX.find_closest_node_result_fixed_nodes(explanation_results[prediction], max_nodes=max_nodes)
+	best_coalition = find_closest_node_result_fixed_nodes(explanation_results[prediction], max_nodes=max_nodes)
 
 	score = best_coalition['P'] # Get score computed by SubgraphX for the entire subgraph
 
@@ -699,7 +714,11 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, e
 	if num_workers > host_cpu_count:
 		num_workers = host_cpu_count
 
-	max_degree = 20
+	# if num_workers > 1:
+	# 	device = 'cpu'
+	max_degree = 20 #limited for scalability reasons
+
+	print("[i] Using num workers: ", num_workers)
 	#print('[i] Filtering seed genes with more than', max_degree, 'degree to reduce computational time of SubgraphX.')
 
 	parameters_l = []
@@ -707,19 +726,29 @@ def predict_candidate_genes_subgraphx(model, dataset, predictions, disease_Id, e
 	for i in range(len(node_list)):
 		node = node_list[i]
 		if labels[i] == 0 and predictions[i] == 0 and G.degree[node] < max_degree: # Degree filter
-			parameters_l.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x, num_classes, labels])
-	
-	if device == 'cuda':
-		multiprocessing.set_start_method('spawn', force=True)
+			###debug###
+			# run_explanation([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x, num_classes, labels])
+			parameters_l.append([node, model, G, predictions, num_hops, dataset.edge_index, explanation_nodes_ratio, dataset.x, num_classes, labels, device])
 
-	p = multiprocessing.Pool(num_workers)
-	results = p.map(run_explanation, parameters_l)
-	p.close()
+	results = []
+	if num_workers > 1:		
+		# if device == 'cuda':
+		# multiprocessing.set_start_method('spawn', force=True)
+
+		# p = multiprocessing.Pool(num_workers)
+		
+		# results = p.map(run_explanation, parameters_l)
+		# p.close()
+		results = process_map(run_explanation, parameters_l, max_workers=num_workers)
+
+	else:
+		for args in tqdm(parameters_l):
+			results.append(run_explanation(args))
 
 	ranking = {}
-
+	
 	times = []
-
+	
 	for candidates, time in results:
 		times.append(time)
 		for seed in candidates:
