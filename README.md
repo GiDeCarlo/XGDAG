@@ -42,7 +42,12 @@ The script will use the explainers to explain the models for the specified disea
 
 After having computed the rankings (or using the precompued ones), it is possible to use the provided notebooks to analyze the results and generate plots like the ones shown in the paper. The notebooks ```comparison_plots_disgenet.ipynb``` and ```comparison_plots_omim.ipynb``` analyze the results on DisGeNET and OMIM+PheI datasets, respectively. Finally, ```comparison_plots_omim_vs_disgenet.ipynb``` provides a comparison of the results on both datasets.
 
+# Citation
+
+If you use our work, please cite our paper 😄
+
+Andrea Mastropietro, Gianluca De Carlo, Aris Anagnostopoulos, XGDAG: explainable gene–disease associations via graph neural networks, Bioinformatics, Volume 39, Issue 8, August 2023, btad482, [https://doi.org/10.1093/bioinformatics/btad482](https://doi.org/10.1093/bioinformatics/btad482).
+
 ## Contacts
 
 For any further question, do not hesitate to drop an email [here](mailto:decarlo@diag.uniroma1.it) or [here](mailto:mastropietro@diag.uniroma1.it).
-
