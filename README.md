@@ -2,7 +2,7 @@
 
 # XGDAG
  
-This is the official repository for **XGDAG: eXplainable Gene-Disease Associations via Graph Neural Networks**.
+This is the official repository for [**XGDAG: eXplainable Gene-Disease Associations via Graph Neural Networks**](https://doi.org/10.1093/bioinformatics/btad482).
 
 The repository contains scripts and notebook to run the code and reproduce the experiments in the paper.
 
@@ -46,7 +46,7 @@ After having computed the rankings (or using the precompued ones), it is possibl
 
 If you use our work, please cite our paper 😄
 
-Andrea Mastropietro, Gianluca De Carlo, Aris Anagnostopoulos, XGDAG: explainable gene–disease associations via graph neural networks, Bioinformatics, Volume 39, Issue 8, August 2023, btad482, [https://doi.org/10.1093/bioinformatics/btad482](https://doi.org/10.1093/bioinformatics/btad482).
+Andrea Mastropietro, Gianluca De Carlo, Aris Anagnostopoulos, XGDAG: explainable gene–disease associations via graph neural networks, Bioinformatics, Volume 39, Issue 8, August 2023, btad482, [https://doi.org/10.1093/bioinformatics/btad482](https://doi.org/10.1093/bioinformatics/btad482)
 
 ## Contacts
 
