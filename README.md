@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Docs/XGDAG_logo.svg" alt="XGDAG logo" width=30%>
+</p>
+
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white) 
 
 # XGDAG
