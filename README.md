@@ -52,6 +52,8 @@ If you use our work, please cite our paper 😄
 
 Andrea Mastropietro, Gianluca De Carlo, Aris Anagnostopoulos, XGDAG: explainable gene–disease associations via graph neural networks, Bioinformatics, Volume 39, Issue 8, August 2023, btad482, [https://doi.org/10.1093/bioinformatics/btad482](https://doi.org/10.1093/bioinformatics/btad482)
 
+Special thanks to [Simone Fiacco](https://www.linkedin.com/in/simone-fiacco-27bb5a25a/) for creating the XGDAG logo.
+
 ## Contacts
 
 For any further question, do not hesitate to drop an email [here](mailto:decarlo@diag.uniroma1.it) or [here](mailto:mastropietro@diag.uniroma1.it).
