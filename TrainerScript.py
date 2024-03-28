@@ -1,7 +1,6 @@
-from GNNTrain import train, predict_from_saved_model
+from GNNTrain import train
 from CreateDatasetv2 import get_dataset_from_graph
-from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
-from GDARanking import get_ranking, predict_candidate_genes, validate_with_extended_dataset, get_ranking_no_LP_intersection, validate_with_extended_dataset_no_LP
+from Paths import PATH_TO_GRAPHS
 from GraphSageModel import GNN7L_Sage
 import CreateDatasetv2_binary_diamond
 
