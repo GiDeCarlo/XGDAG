@@ -69,8 +69,9 @@ def add_nedbit_features(G, feature_path, graph_save_path, disease_id, scale=Fals
 	print('[+] Adding NeDBIT features...', end='')
 
 	feature_path_disease = feature_path + disease_id + '_features.csv'
+	print(feature_path_disease)
 	try:
-		nedbit_features = pd.read_csv(feature_path_disease)
+		nedbit_features = pd.read_csv(feature_path_disease, keep_default_na=False)
 	except FileNotFoundError:
 		print('Error: file ' + feature_path_disease + ' not found. Exiting...')
 		sys.exit(-1) 

@@ -1,5 +1,5 @@
-from GNNTrain import predict_from_saved_model
-from CreateDatasetv2 import get_dataset_from_graph
+from src.GNNTrain import predict_from_saved_model
+from src.CreateDataset import get_dataset_from_graph
 from Paths import PATH_TO_GRAPHS, PATH_TO_RANKINGS
 from GDARanking import predict_candidate_genes
 import CreateDatasetv2_binary_diamond
