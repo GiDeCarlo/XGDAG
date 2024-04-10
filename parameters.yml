@@ -18,3 +18,14 @@ trainer_script:
   HIDDEN_CHANNELS: 16
   DATASET_PATH: "Datasets/"
   QUARTILES: False #if False, uses labels from NIAPU. If True, divides the pseudo-classes in quartiles. No effect for binary classification.
+
+compute_ranking_script:
+  DISEASE_IDs: ['C0006142', 'C0009402', 'C0023893', 'C0036341',  'C0376358', 'C3714756', 'C0860207',  'C0011581', 'C0005586', 'C0001973']
+  EXPLAINERS: ['gnnexplainer','graphsvx', 'subgraphx'] 
+  MODE: ["multiclass", "binary"] #binary. Multiclass uses pseudo-labels from NIAPU. binary considers unlabeled genes as negative samples.
+  NUM_CPUs: 8
+  FROM_DIAMOND: False #Set to True when using PPI data from DIAMOnD publication
+  GRAPH_PATH: "Graphs/graph_nedbit_"
+  SAVE_RANKING_PATH: "Rankings/"
+  MODEL_NAME_PREFIX: "GraphSAGE_"
+  DATASET_PATH: "Datasets/"

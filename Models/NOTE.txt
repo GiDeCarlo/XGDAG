@@ -1,0 +1,2 @@
+The right models should be the ones with "new rankings".
+In diamond and binary "new rankings" noes not appear.
