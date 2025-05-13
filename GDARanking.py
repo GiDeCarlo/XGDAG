@@ -11,7 +11,12 @@ import multiprocessing
 
 import torch
 import torch_geometric
-from torch_geometric.nn.models import GNNExplainer
+
+try:
+    from torch_geometric.explain.algorithm import GNNExplainer
+except ImportError:
+    # fallback for older versions 
+    from torch_geometric.nn.models import GNNExplainer
 
 from GraphSVX.src.explainers import GraphSVX
 # from src.data import prepare_data
