@@ -20,7 +20,13 @@ from sklearn.linear_model import (LassoLars, Lasso,
 from sklearn.metrics import r2_score
 from torch.autograd import Variable
 from torch.utils.data import DataLoader, TensorDataset
-from torch_geometric.nn import GNNExplainer as GNNE
+
+try:
+    from torch_geometric.explain.algorithm import GNNExplainer as GNNE
+except ImportError:
+    # fallback for older versions 
+    from torch_geometric.nn.models import GNNExplainer as GNNE
+    
 from torch_geometric.nn import MessagePassing
 
 from .models import LinearRegressionModel
